@@ -1,0 +1,32 @@
+
+> minecraft-clone-desktop@1.0.0 start
+> electron .
+
+[15983:0605/155902.827702:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[15983:0605/155902.827884:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[15983:0605/155902.827906:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[15983:0605/155902.827919:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+Internal server running at http://127.0.0.1:42917
+[15983:0605/155902.946475:ERROR:bus.cc(407)] Failed to connect to the bus: Could not parse server address: Unknown address type (examples of valid types are "tcp" and on UNIX "unix")
+[RENDERER CONSOLE] %cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged. (at node:electron/js2c/sandbox_bundle:2)
+Warning: vkCreateInstance: Found no drivers!
+Warning: vkCreateInstance failed with VK_ERROR_INCOMPATIBLE_DRIVER
+    at CheckVkSuccessImpl (../../third_party/dawn/src/dawn/native/vulkan/VulkanError.cpp:101)
+    at CreateVkInstance (../../third_party/dawn/src/dawn/native/vulkan/BackendVk.cpp:493)
+    at Initialize (../../third_party/dawn/src/dawn/native/vulkan/BackendVk.cpp:379)
+    at Create (../../third_party/dawn/src/dawn/native/vulkan/BackendVk.cpp:301)
+    at operator() (../../third_party/dawn/src/dawn/native/vulkan/BackendVk.cpp:556)
+
+Warning: EGL_EXT_create_context_robustness must be supported
+    at Create (../../third_party/dawn/src/dawn/native/opengl/ContextEGL.cpp:79)
+    at Create (../../third_party/dawn/src/dawn/native/opengl/PhysicalDeviceGL.cpp:110)
+
+Terminated
+/app/node_modules/electron/dist/electron exited with signal SIGTERM
