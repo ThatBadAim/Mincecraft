@@ -621,7 +621,7 @@ export class WorldManager {
 
     this.lastPlayerChunkX = null;
     this.lastPlayerChunkZ = null;
-    this.meshList = []; // Cached flat array of meshes for lightning-fast raycasting
+    this.meshList = new Set(); // Cached set of meshes for lightning-fast raycasting
 
     this.atlasCanvas = null;
     this.textureAtlas = generateTextureAtlas(canvas => { this.atlasCanvas = canvas; });
@@ -703,15 +703,13 @@ export class WorldManager {
     if (chunk.meshSolid) {
       this.scene.remove(chunk.meshSolid);
       chunk.meshSolid.geometry.dispose();
-      const idx = this.meshList.indexOf(chunk.meshSolid);
-      if (idx !== -1) this.meshList.splice(idx, 1);
+      this.meshList.delete(chunk.meshSolid);
       chunk.meshSolid = null;
     }
     if (chunk.meshTransparent) {
       this.scene.remove(chunk.meshTransparent);
       chunk.meshTransparent.geometry.dispose();
-      const idx = this.meshList.indexOf(chunk.meshTransparent);
-      if (idx !== -1) this.meshList.splice(idx, 1);
+      this.meshList.delete(chunk.meshTransparent);
       chunk.meshTransparent = null;
     }
 
@@ -728,7 +726,7 @@ export class WorldManager {
       chunk.meshSolid.castShadow = true;
       chunk.meshSolid.receiveShadow = true;
       this.scene.add(chunk.meshSolid);
-      this.meshList.push(chunk.meshSolid);
+      this.meshList.add(chunk.meshSolid);
     }
 
     // 2. Build Transparent Mesh
@@ -742,7 +740,7 @@ export class WorldManager {
       chunk.meshTransparent.castShadow = true;
       chunk.meshTransparent.receiveShadow = true;
       this.scene.add(chunk.meshTransparent);
-      this.meshList.push(chunk.meshTransparent);
+      this.meshList.add(chunk.meshTransparent);
     }
   }
 
@@ -952,14 +950,12 @@ export class WorldManager {
         if (chunk.meshSolid) {
           this.scene.remove(chunk.meshSolid);
           chunk.meshSolid.geometry.dispose();
-          const idx = this.meshList.indexOf(chunk.meshSolid);
-          if (idx !== -1) this.meshList.splice(idx, 1);
+          this.meshList.delete(chunk.meshSolid);
         }
         if (chunk.meshTransparent) {
           this.scene.remove(chunk.meshTransparent);
           chunk.meshTransparent.geometry.dispose();
-          const idx = this.meshList.indexOf(chunk.meshTransparent);
-          if (idx !== -1) this.meshList.splice(idx, 1);
+          this.meshList.delete(chunk.meshTransparent);
         }
         // Delete from main thread cache
         delete this.chunks[key];
