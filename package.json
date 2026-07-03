@@ -4,12 +4,18 @@
   "description": "Desktop Minecraft Clone written in Three.js and Electron",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "mocha test_*.mjs"
   },
   "devDependencies": {
-    "electron": "^28.2.0"
+    "chai": "^6.2.2",
+    "electron": "^28.2.0",
+    "mocha": "^11.7.6"
   },
   "allowScripts": {
     "electron": true
+  },
+  "dependencies": {
+    "three": "^0.185.1"
   }
 }
