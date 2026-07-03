@@ -12,5 +12,8 @@
   },
   "allowScripts": {
     "electron": true
+  },
+  "dependencies": {
+    "three": "^0.185.1"
   }
 }
