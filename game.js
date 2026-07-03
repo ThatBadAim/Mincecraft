@@ -3,7 +3,7 @@ import { WorldManager, BLOCKS, BLOCK_INFO } from './world.js';
 import { gameAudio } from './audio.js';
 import { EntityManager } from './entities.js';
 
-class GameController {
+export class GameController {
   constructor() {
     this.container = document.getElementById('canvas-container');
 
@@ -2399,6 +2399,9 @@ class GameController {
 }
 
 // Instantiate game instance on script start
-window.addEventListener('DOMContentLoaded', () => {
-  new GameController();
-});
+// Only instantiate automatically if not running in a test environment
+if (typeof process === 'undefined' || process.env.NODE_ENV !== 'test') {
+  window.addEventListener('DOMContentLoaded', () => {
+    new GameController();
+  });
+}
