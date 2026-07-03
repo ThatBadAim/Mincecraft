@@ -180,7 +180,6 @@ export function getTerrainHeightAndWater(worldX, worldZ) {
 
   const baseHeight = baseNoise * 26 + 18; // base height range ~ [18, 44]
   let height = baseHeight + detailNoise * 4.5;
-  const uncarvedHeight = Math.floor(height);
 
   let waterLevel = 0;
   let isPool = false;
