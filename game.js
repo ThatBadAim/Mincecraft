@@ -1,5 +1,6 @@
 import { PhysicsEngine } from './physics.js';
-import { WorldManager, BLOCKS, BLOCK_INFO } from './world.js';
+import { WorldManager } from './world.js';
+import { BLOCKS, BLOCK_INFO } from './constants.js';
 import { gameAudio } from './audio.js';
 import { EntityManager } from './entities.js';
 
