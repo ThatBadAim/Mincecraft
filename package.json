@@ -4,7 +4,8 @@
   "description": "Desktop Minecraft Clone written in Three.js and Electron",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "test": "node test_worker.js"
   },
   "devDependencies": {
     "electron": "^28.2.0"
