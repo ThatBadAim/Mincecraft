@@ -590,7 +590,8 @@ export class EntityManager {
       const distSq = dx * dx + dz * dz;
       if (distSq > 2304) { // 48^2
         animal.destroy();
-        this.animals.splice(i, 1);
+        this.animals[i] = this.animals[this.animals.length - 1];
+        this.animals.pop();
         continue;
       }
 
@@ -604,7 +605,8 @@ export class EntityManager {
         );
 
         animal.destroy();
-        this.animals.splice(i, 1);
+        this.animals[i] = this.animals[this.animals.length - 1];
+        this.animals.pop();
       }
     }
 
@@ -626,7 +628,8 @@ export class EntityManager {
 
       if (result) {
         coll.destroy();
-        this.collectibles.splice(i, 1);
+        this.collectibles[i] = this.collectibles[this.collectibles.length - 1];
+        this.collectibles.pop();
       }
     }
   }
