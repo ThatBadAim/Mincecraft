@@ -9,7 +9,15 @@ let port;
 function startServer() {
   server = http.createServer((req, res) => {
     // Parse URL path, ignoring query parameters (e.g. index.html?foo=bar)
-    const urlPath = req.url.split('?')[0];
+    let urlPath = req.url.split('?')[0];
+    try {
+      urlPath = decodeURIComponent(urlPath);
+    } catch (err) {
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end('Bad Request');
+      return;
+    }
     const safeUrlPath = urlPath === '/' ? '/index.html' : urlPath;
     const filePath = path.join(__dirname, safeUrlPath);
 
