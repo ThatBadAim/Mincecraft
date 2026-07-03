@@ -1,5 +1,5 @@
 import { gameAudio } from './audio.js';
-import { BLOCKS } from './world.js';
+import { BLOCKS } from './constants.js';
 
 class Animal {
   constructor(x, y, z, scene, type) {

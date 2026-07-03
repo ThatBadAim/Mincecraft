@@ -1,5 +1,5 @@
 import { gameAudio } from './audio.js';
-import { BLOCKS } from './world.js';
+import { BLOCKS } from './constants.js';
 
 export class PhysicsEngine {
   constructor() {
