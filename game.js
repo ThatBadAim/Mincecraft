@@ -1763,8 +1763,10 @@ class GameController {
 
     for (let i = 0; i < count; i++) {
       let pMesh;
+      let pObj;
       if (this.particlePool.length > 0) {
-        pMesh = this.particlePool.pop();
+        pObj = this.particlePool.pop();
+        pMesh = pObj.mesh;
         pMesh.material = mat;
         pMesh.visible = true;
       } else {
@@ -1773,6 +1775,11 @@ class GameController {
         }
         pMesh = new THREE.Mesh(this.sharedParticleGeometry, mat);
         this.scene.add(pMesh);
+        pObj = {
+          mesh: pMesh,
+          velocity: new THREE.Vector3(),
+          life: 0
+        };
       }
 
       // Random starting coordinates inside the voxel
@@ -1782,15 +1789,14 @@ class GameController {
         z + 0.3 + Math.random() * 0.4
       );
 
-      this.particles.push({
-        mesh: pMesh,
-        velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 4.0,
-          (Math.random() * 5.0) + 2.0, // Fly upward
-          (Math.random() - 0.5) * 4.0
-        ),
-        life: 0.6 // Lifetime seconds
-      });
+      pObj.velocity.set(
+        (Math.random() - 0.5) * 4.0,
+        (Math.random() * 5.0) + 2.0, // Fly upward
+        (Math.random() - 0.5) * 4.0
+      );
+      pObj.life = 0.6; // Lifetime seconds
+
+      this.particles.push(pObj);
     }
   }
 
@@ -1823,7 +1829,7 @@ class GameController {
 
       if (p.life <= 0) {
         p.mesh.visible = false;
-        this.particlePool.push(p.mesh);
+        this.particlePool.push(p);
         this.particles.splice(i, 1);
       } else {
         // Move particle with velocity + gravity
