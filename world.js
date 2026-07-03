@@ -121,7 +121,7 @@ function generateTextureAtlas(onCanvasCreated) {
         ctx.fillStyle = '#3c2514';
         for (let i = 0; i < TEXTURE_SIZE; i += 4) {
           const shift = Math.floor(Math.sin(i) * 2);
-          ctx.fillRect(tx + i + 1, ty, 1.5, TEXTURE_SIZE);
+          ctx.fillRect(tx + i + 1 + shift, ty, 1.5, TEXTURE_SIZE);
         }
         // Highlighted ridges
         ctx.fillStyle = '#7c5434';
