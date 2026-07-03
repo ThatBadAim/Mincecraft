@@ -49,6 +49,7 @@ class GameController {
 
     // Slot-based Inventory: 36 slots (0-26 main inventory, 27-35 hotbar)
     this.inventorySlots = Array(36).fill(null);
+    this.camDirCache = new THREE.Vector3();
     this.selectedInventorySlotIndex = null; // For moving/swapping items
 
     // 2x2 Crafting Grid states (0-3 input slots, output)
@@ -1960,7 +1961,6 @@ class GameController {
 
     if (this.controls.isLocked) {
       // Obtain camera direction vectors
-      if (!this.camDirCache) this.camDirCache = new THREE.Vector3();
       this.camera.getWorldDirection(this.camDirCache);
 
       if (this.playerHealth > 0) {
