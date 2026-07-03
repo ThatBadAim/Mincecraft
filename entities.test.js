@@ -87,3 +87,77 @@ test('Animal takeDamage triggers flashRed', () => {
   assert.strictEqual(sheep.hurtTimer, 0.2);
   assert.strictEqual(mockChild.material, Sheep.redFlashMat);
 });
+
+test('Animal flashRed saves original materials and sets red flash material', () => {
+  const mockScene = { add: () => {}, remove: () => {} };
+  const sheep = new Sheep(0, 0, 0, mockScene);
+
+  const mockMesh = new global.THREE.Mesh();
+  const originalMaterial = { color: 'white' };
+  mockMesh.material = originalMaterial;
+  sheep.group.add(mockMesh);
+
+  const mockNonMesh = { isMesh: false, material: { color: 'blue' } };
+  sheep.group.add(mockNonMesh);
+
+  sheep.flashRed();
+
+  assert.strictEqual(sheep.hurtTimer, 0.2);
+  assert.ok(Sheep.redFlashMat, 'redFlashMat should be initialized');
+  assert.strictEqual(mockMesh.material, Sheep.redFlashMat, 'mesh material should be changed to redFlashMat');
+  assert.strictEqual(mockNonMesh.material.color, 'blue', 'non-mesh material should not be changed');
+  assert.strictEqual(sheep.originalMaterials.get(mockMesh), originalMaterial, 'original material should be saved');
+  assert.ok(!sheep.originalMaterials.has(mockNonMesh), 'non-mesh should not be in originalMaterials');
+});
+
+test('Animal flashRed called multiple times preserves the first original material', () => {
+  const mockScene = { add: () => {}, remove: () => {} };
+  const sheep = new Sheep(0, 0, 0, mockScene);
+
+  const mockMesh = new global.THREE.Mesh();
+  const originalMaterial = { color: 'white' };
+  mockMesh.material = originalMaterial;
+  sheep.group.add(mockMesh);
+
+  sheep.flashRed();
+
+  // Change the flash material or simulate a state where it's modified
+  mockMesh.material = { color: 'yellow' };
+
+  sheep.flashRed();
+
+  assert.strictEqual(sheep.originalMaterials.get(mockMesh), originalMaterial, 'original material should not be overwritten on subsequent calls');
+});
+
+test('Animal resetMaterials restores original materials correctly', () => {
+  const mockScene = { add: () => {}, remove: () => {} };
+  const sheep = new Sheep(0, 0, 0, mockScene);
+
+  const mockMesh = new global.THREE.Mesh();
+  const originalMaterial = { color: 'white' };
+  mockMesh.material = originalMaterial;
+  sheep.group.add(mockMesh);
+
+  // Mesh 2 that is not tracked in originalMaterials
+  const mockMesh2 = new global.THREE.Mesh();
+  const otherMaterial = { color: 'gray' };
+  mockMesh2.material = otherMaterial;
+  sheep.group.add(mockMesh2);
+
+  const mockNonMesh = { isMesh: false, material: { color: 'blue' } };
+  sheep.group.add(mockNonMesh);
+
+  // Only track the first mesh
+  sheep.originalMaterials.set(mockMesh, originalMaterial);
+
+  // Alter materials as if they had been flashed
+  mockMesh.material = { color: 'red' };
+  mockMesh2.material = { color: 'red' };
+  mockNonMesh.material = { color: 'red' };
+
+  sheep.resetMaterials();
+
+  assert.strictEqual(mockMesh.material, originalMaterial, 'tracked mesh material should be restored');
+  assert.strictEqual(mockMesh2.material.color, 'red', 'untracked mesh should not be restored');
+  assert.strictEqual(mockNonMesh.material.color, 'red', 'non-mesh should not be restored');
+});
