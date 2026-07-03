@@ -1541,7 +1541,10 @@ class GameController {
         const lightIndex = this.torchLights.findIndex(l => Math.floor(l.position.x) === x && Math.floor(l.position.y) === y && Math.floor(l.position.z) === z);
         if (lightIndex !== -1) {
           this.scene.remove(this.torchLights[lightIndex]);
-          this.torchLights.splice(lightIndex, 1);
+          const lastLight = this.torchLights.pop();
+          if (lightIndex < this.torchLights.length) {
+            this.torchLights[lightIndex] = lastLight;
+          }
         }
       }
 
@@ -1582,7 +1585,10 @@ class GameController {
                 const lightIndex = this.torchLights.findIndex(l => Math.floor(l.position.x) === bx && Math.floor(l.position.y) === by && Math.floor(l.position.z) === bz);
                 if (lightIndex !== -1) {
                   this.scene.remove(this.torchLights[lightIndex]);
-                  this.torchLights.splice(lightIndex, 1);
+                  const lastLight = this.torchLights.pop();
+                  if (lightIndex < this.torchLights.length) {
+                    this.torchLights[lightIndex] = lastLight;
+                  }
                 }
               }
             }
@@ -1832,7 +1838,10 @@ class GameController {
       if (p.life <= 0) {
         p.mesh.visible = false;
         this.particlePool.push(p);
-        this.particles.splice(i, 1);
+        const lastParticle = this.particles.pop();
+        if (i < this.particles.length) {
+          this.particles[i] = lastParticle;
+        }
       } else {
         // Move particle with velocity + gravity
         p.velocity.y -= 9.8 * dt; // Simple local gravity
