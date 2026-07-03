@@ -1489,7 +1489,7 @@ class GameController {
     this.raycaster.setFromCamera(this.centerVec, this.camera);
 
     // Use cached mesh array for high-performance raycasting
-    const intersects = this.raycaster.intersectObjects(this.world.meshList);
+    const intersects = this.raycaster.intersectObjects(this.world.getMeshesForRaycast());
 
     if (intersects.length > 0) {
       const hit = intersects[0];
