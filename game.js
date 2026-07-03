@@ -1832,7 +1832,10 @@ class GameController {
       if (p.life <= 0) {
         p.mesh.visible = false;
         this.particlePool.push(p);
-        this.particles.splice(i, 1);
+        const last = this.particles.pop();
+        if (i < this.particles.length) {
+          this.particles[i] = last;
+        }
       } else {
         // Move particle with velocity + gravity
         p.velocity.y -= 9.8 * dt; // Simple local gravity
