@@ -621,7 +621,9 @@ export class WorldManager {
 
     this.lastPlayerChunkX = null;
     this.lastPlayerChunkZ = null;
-    this.meshList = []; // Cached flat array of meshes for lightning-fast raycasting
+    this.meshSet = new Set();
+    this.meshListCache = []; // Cached flat array of meshes for lightning-fast raycasting
+    this.meshesDirty = false;
 
     this.atlasCanvas = null;
     this.textureAtlas = generateTextureAtlas(canvas => { this.atlasCanvas = canvas; });
@@ -656,6 +658,14 @@ export class WorldManager {
     this.waterQueue = [];
     this.waterTimer = 0;
     this.waterTickInterval = 0.2; // 200ms ticks
+  }
+
+  get meshList() {
+    if (this.meshesDirty) {
+      this.meshListCache = Array.from(this.meshSet);
+      this.meshesDirty = false;
+    }
+    return this.meshListCache;
   }
 
   setupWorkerListeners() {
@@ -703,15 +713,15 @@ export class WorldManager {
     if (chunk.meshSolid) {
       this.scene.remove(chunk.meshSolid);
       chunk.meshSolid.geometry.dispose();
-      const idx = this.meshList.indexOf(chunk.meshSolid);
-      if (idx !== -1) this.meshList.splice(idx, 1);
+      this.meshSet.delete(chunk.meshSolid);
+      this.meshesDirty = true;
       chunk.meshSolid = null;
     }
     if (chunk.meshTransparent) {
       this.scene.remove(chunk.meshTransparent);
       chunk.meshTransparent.geometry.dispose();
-      const idx = this.meshList.indexOf(chunk.meshTransparent);
-      if (idx !== -1) this.meshList.splice(idx, 1);
+      this.meshSet.delete(chunk.meshTransparent);
+      this.meshesDirty = true;
       chunk.meshTransparent = null;
     }
 
@@ -728,7 +738,8 @@ export class WorldManager {
       chunk.meshSolid.castShadow = true;
       chunk.meshSolid.receiveShadow = true;
       this.scene.add(chunk.meshSolid);
-      this.meshList.push(chunk.meshSolid);
+      this.meshSet.add(chunk.meshSolid);
+      this.meshesDirty = true;
     }
 
     // 2. Build Transparent Mesh
@@ -742,7 +753,8 @@ export class WorldManager {
       chunk.meshTransparent.castShadow = true;
       chunk.meshTransparent.receiveShadow = true;
       this.scene.add(chunk.meshTransparent);
-      this.meshList.push(chunk.meshTransparent);
+      this.meshSet.add(chunk.meshTransparent);
+      this.meshesDirty = true;
     }
   }
 
@@ -952,14 +964,14 @@ export class WorldManager {
         if (chunk.meshSolid) {
           this.scene.remove(chunk.meshSolid);
           chunk.meshSolid.geometry.dispose();
-          const idx = this.meshList.indexOf(chunk.meshSolid);
-          if (idx !== -1) this.meshList.splice(idx, 1);
+          this.meshSet.delete(chunk.meshSolid);
+          this.meshesDirty = true;
         }
         if (chunk.meshTransparent) {
           this.scene.remove(chunk.meshTransparent);
           chunk.meshTransparent.geometry.dispose();
-          const idx = this.meshList.indexOf(chunk.meshTransparent);
-          if (idx !== -1) this.meshList.splice(idx, 1);
+          this.meshSet.delete(chunk.meshTransparent);
+          this.meshesDirty = true;
         }
         // Delete from main thread cache
         delete this.chunks[key];
