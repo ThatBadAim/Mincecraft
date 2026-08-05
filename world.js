@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { noiseGen, getTerrainHeight, getTerrainHeightAndWater } from './noise.js';
 import { BLOCKS, BLOCK_INFO } from './constants.js';
 
@@ -597,7 +598,8 @@ export class WorldManager {
     });
 
     // Water simulation properties
-    this.waterQueue = [];
+    this.waterQueue = []; // array of {x,y,z,life}
+    this.waterQueueKeys = new Set(); // set of `${x},${y},${z}`
     this.waterTimer = 0;
     this.waterTickInterval = 0.2; // 200ms ticks
   }
@@ -677,7 +679,7 @@ export class WorldManager {
       geo.setAttribute('uv', new THREE.BufferAttribute(geometry.solid.uv, 2));
 
       chunk.meshSolid = new THREE.Mesh(geo, this.materialSolid);
-      chunk.meshSolid.castShadow = true;
+      chunk.meshSolid.castShadow = false;
       chunk.meshSolid.receiveShadow = true;
       this.scene.add(chunk.meshSolid);
       this.meshSet.add(chunk.meshSolid);
@@ -692,7 +694,7 @@ export class WorldManager {
       geo.setAttribute('uv', new THREE.BufferAttribute(geometry.transparent.uv, 2));
 
       chunk.meshTransparent = new THREE.Mesh(geo, this.materialTransparent);
-      chunk.meshTransparent.castShadow = true;
+      chunk.meshTransparent.castShadow = false;
       chunk.meshTransparent.receiveShadow = true;
       this.scene.add(chunk.meshTransparent);
       this.meshSet.add(chunk.meshTransparent);
@@ -712,7 +714,7 @@ export class WorldManager {
 
   getBlock(x, y, z) {
     if (y < 0) return BLOCK_INFO[BLOCKS.BEDROCK];
-    if (y >= this.chunkHeight) return null;
+    if (y >= this.chunkHeight) return BLOCK_INFO[BLOCKS.AIR];
 
     const cx = Math.floor(x / this.chunkSize);
     const cz = Math.floor(z / this.chunkSize);
@@ -787,7 +789,9 @@ export class WorldManager {
 
     // Water flow queueing logic
     if (type === BLOCKS.WATER) {
-      if (!this.waterQueue.some(w => w.x === x && w.y === y && w.z === z)) {
+      const key = `${x},${y},${z}`;
+      if (!this.waterQueueKeys.has(key)) {
+        this.waterQueueKeys.add(key);
         this.waterQueue.push({ x, y, z, life: 5 });
       }
     } else if (type === BLOCKS.AIR) {
@@ -802,7 +806,9 @@ export class WorldManager {
         const nb = this.getBlock(n.x, n.y, n.z);
         if (nb && nb.type === BLOCKS.WATER) {
           const life = n.isAbove ? 5 : 4;
-          if (!this.waterQueue.some(w => w.x === n.x && w.y === n.y && w.z === n.z)) {
+          const key = `${n.x},${n.y},${n.z}`;
+          if (!this.waterQueueKeys.has(key)) {
+            this.waterQueueKeys.add(key);
             this.waterQueue.push({ x: n.x, y: n.y, z: n.z, life });
           }
         }
@@ -823,19 +829,35 @@ export class WorldManager {
 
     const nextQueue = [];
     const visited = new Set();
+    const updatedChunks = new Set();
 
-    for (const src of this.waterQueue) {
+    // Process up to 500 water blocks per tick to avoid freezing
+    const processCount = Math.min(this.waterQueue.length, 500);
+    const toProcess = this.waterQueue.splice(0, processCount);
+
+    // Cleanup keys that we process
+    for(const src of toProcess) {
+       const key = `${src.x},${src.y},${src.z}`;
+       this.waterQueueKeys.delete(key);
+    }
+
+    for (const src of toProcess) {
       const currentBlock = this.getBlock(src.x, src.y, src.z);
       if (!currentBlock || currentBlock.type !== BLOCKS.WATER) continue;
 
       // 1. Flow down
       const downBlock = this.getBlock(src.x, src.y - 1, src.z);
       if (downBlock && downBlock.type === BLOCKS.AIR) {
-        this.setBlock(src.x, src.y - 1, src.z, BLOCKS.WATER);
+        this.setBlock(src.x, src.y - 1, src.z, BLOCKS.WATER, true, false); // deferMeshUpdate = true, save = false
+        const {cx, cz} = this.getChunkCoords(src.x, src.z);
+        updatedChunks.add(`${cx},${cz}`);
         const key = `${src.x},${src.y - 1},${src.z}`;
         if (!visited.has(key)) {
           visited.add(key);
-          nextQueue.push({ x: src.x, y: src.y - 1, z: src.z, life: src.life });
+          if (!this.waterQueueKeys.has(key)) {
+            this.waterQueueKeys.add(key);
+            nextQueue.push({ x: src.x, y: src.y - 1, z: src.z, life: src.life });
+          }
         }
       }
       // 2. Spread horizontally
@@ -849,22 +871,41 @@ export class WorldManager {
         for (const n of neighbors) {
           const nb = this.getBlock(n.x, n.y, n.z);
           if (nb && nb.type === BLOCKS.AIR) {
-            this.setBlock(n.x, n.y, n.z, BLOCKS.WATER);
+            this.setBlock(n.x, n.y, n.z, BLOCKS.WATER, true, false); // deferMeshUpdate = true, save = false
+            const {cx, cz} = this.getChunkCoords(n.x, n.z);
+            updatedChunks.add(`${cx},${cz}`);
             const key = `${n.x},${n.y},${n.z}`;
             if (!visited.has(key)) {
               visited.add(key);
-              nextQueue.push({ x: n.x, y: n.y, z: n.z, life: src.life - 1 });
+              if (!this.waterQueueKeys.has(key)) {
+                this.waterQueueKeys.add(key);
+                nextQueue.push({ x: n.x, y: n.y, z: n.z, life: src.life - 1 });
+              }
             }
           }
         }
       }
     }
-    this.waterQueue = nextQueue;
+    for (const q of nextQueue) {
+      this.waterQueue.push(q);
+    }
+
+    // Batch rebuild chunks once at end of tick
+    for (const chunkKey of updatedChunks) {
+      const parts = chunkKey.split(',');
+      this.updateChunkMesh(parseInt(parts[0]), parseInt(parts[1]));
+    }
+    this.savedWorldData = this.modifiedBlocks; // update cache
   }
 
   saveWorld() {
-    localStorage.setItem('minecraft_clone_save', JSON.stringify(this.modifiedBlocks));
-    this.savedWorldData = this.modifiedBlocks; // update cache
+    try {
+      localStorage.setItem('minecraft_clone_save', JSON.stringify(this.modifiedBlocks));
+      this.savedWorldData = this.modifiedBlocks; // update cache
+    } catch (e) {
+      console.warn('Failed to save world (quota exceeded?):', e);
+      return;
+    }
 
     const ind = document.getElementById('save-indicator');
     if (ind) {

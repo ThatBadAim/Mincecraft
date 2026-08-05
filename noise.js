@@ -102,6 +102,7 @@ export const noiseGen = new PerlinNoise(0.523456);
 
 // Cache for pool enclosure checks to ensure we only run BFS once per pool peak.
 const poolEnclosedCache = new Map();
+const MAX_POOL_CACHE = 2000;
 
 function isPoolEnclosed(peakX, peakZ, peakHeight, waterLevel) {
   const cacheKey = `${peakX},${peakZ}`;
@@ -164,11 +165,22 @@ function isPoolEnclosed(peakX, peakZ, peakHeight, waterLevel) {
     }
   }
 
+  if (poolEnclosedCache.size > MAX_POOL_CACHE) {
+    const firstKey = poolEnclosedCache.keys().next().value;
+    poolEnclosedCache.delete(firstKey);
+  }
   poolEnclosedCache.set(cacheKey, true);
   return true;
 }
 
+const terrainCache = new Map();
+const MAX_TERRAIN_CACHE = 10000;
+
 export function getTerrainHeightAndWater(worldX, worldZ) {
+  const cacheKey = `${worldX},${worldZ}`;
+  if (terrainCache.has(cacheKey)) {
+    return terrainCache.get(cacheKey);
+  }
   // Base low-frequency terrain (large hills / valleys)
   const baseNoise = noiseGen.fbm2D(worldX * 0.008, worldZ * 0.008, 4, 0.5, 2.0);
 

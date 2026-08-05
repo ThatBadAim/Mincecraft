@@ -1,7 +1,10 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const http = require('http');
-const fs = require('fs');
+import { app, BrowserWindow } from 'electron';
+import path from 'path';
+import http from 'http';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let server;
 let port;

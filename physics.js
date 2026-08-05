@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { gameAudio } from './audio.js';
 import { BLOCKS } from './constants.js';
 
@@ -44,40 +45,31 @@ export class PhysicsEngine {
   // Check if a point is colliding with a solid block in the world helper
   // We check bounds of the block
   getBlocksIntersecting(world, pos, width, height) {
-    // Expand the search bounding box by 0.5 blocks to ensure adjacent blocks are checked for collisions
-    const minX = Math.floor(pos.x - width / 2 - 0.5);
-    const maxX = Math.floor(pos.x + width / 2 + 0.5);
-    const minY = Math.floor(pos.y - 0.5);
-    const maxY = Math.floor(pos.y + height + 0.5);
-    const minZ = Math.floor(pos.z - width / 2 - 0.5);
-    const maxZ = Math.floor(pos.z + width / 2 + 0.5);
+    const minX = Math.floor(pos.x - width / 2);
+    const maxX = Math.floor(pos.x + width / 2);
+    const minY = Math.floor(pos.y - 0.5); // ground detection pad
+    const maxY = Math.floor(pos.y + height);
+    const minZ = Math.floor(pos.z - width / 2);
+    const maxZ = Math.floor(pos.z + width / 2);
 
-    const collidingBlocks = [];
+    let idx = 0;
 
     for (let x = minX; x <= maxX; x++) {
       for (let y = minY; y <= maxY; y++) {
         for (let z = minZ; z <= maxZ; z++) {
           const block = world.getBlock(x, y, z);
-          if (block === null) {
-            // Treat unloaded/out-of-bounds chunks as solid barriers to prevent falling into the void
-            collidingBlocks.push({
-              x: x, y: y, z: z,
-              minX: x, maxX: x + 1,
-              minY: y, maxY: y + 1,
-              minZ: z, maxZ: z + 1
-            });
-          } else if (block && block.solid) {
-            collidingBlocks.push({
-              x: x, y: y, z: z,
-              minX: x, maxX: x + 1,
-              minY: y, maxY: y + 1,
-              minZ: z, maxZ: z + 1
-            });
+          if (block === null || (block && block.solid)) {
+             if (idx < this.collisionBuffer.length) {
+               const b = this.collisionBuffer[idx++];
+               b.minX = x; b.maxX = x + 1;
+               b.minY = y; b.maxY = y + 1;
+               b.minZ = z; b.maxZ = z + 1;
+             }
           }
         }
       }
     }
-    return collidingBlocks;
+    return idx;
   }
 
   update(deltaTime, keys, cameraDirection, world) {
@@ -125,8 +117,8 @@ export class PhysicsEngine {
 
     // Prevent standing up if blocked above
     if (wasCrouching && !this.isCrouching) {
-      const topBlocks = this.getBlocksIntersecting(world, this.position, this.playerWidth, this.playerHeight);
-      if (topBlocks.length > 0) {
+      const topBlocksCount = this.getBlocksIntersecting(world, this.position, this.playerWidth, this.playerHeight);
+      if (topBlocksCount > 0) {
         this.isCrouching = true; // Keep crouching
       }
     }
@@ -190,8 +182,9 @@ export class PhysicsEngine {
 
     // --- X Axis ---
     this.position.x += this.velocity.x * deltaTime;
-    let collisions = this.getBlocksIntersecting(world, this.position, this.playerWidth, height);
-    for (const block of collisions) {
+    let collisionsCount = this.getBlocksIntersecting(world, this.position, this.playerWidth, height);
+    for (let i = 0; i < collisionsCount; i++) {
+      const block = this.collisionBuffer[i];
       const overlapsX = (this.position.x + radius > block.minX) && (this.position.x - radius < block.maxX);
       const overlapsY = (this.position.y + height > block.minY) && (this.position.y < block.maxY);
       const overlapsZ = (this.position.z + radius > block.minZ) && (this.position.z - radius < block.maxZ);
@@ -204,13 +197,15 @@ export class PhysicsEngine {
           this.position.x = block.maxX + radius; // Snap to right side
         }
         this.velocity.x = 0;
+        break;
       }
     }
 
     // --- Z Axis ---
     this.position.z += this.velocity.z * deltaTime;
-    collisions = this.getBlocksIntersecting(world, this.position, this.playerWidth, height);
-    for (const block of collisions) {
+    collisionsCount = this.getBlocksIntersecting(world, this.position, this.playerWidth, height);
+    for (let i = 0; i < collisionsCount; i++) {
+      const block = this.collisionBuffer[i];
       const overlapsX = (this.position.x + radius > block.minX) && (this.position.x - radius < block.maxX);
       const overlapsY = (this.position.y + height > block.minY) && (this.position.y < block.maxY);
       const overlapsZ = (this.position.z + radius > block.minZ) && (this.position.z - radius < block.maxZ);
@@ -222,6 +217,7 @@ export class PhysicsEngine {
           this.position.z = block.maxZ + radius; // Snap to front
         }
         this.velocity.z = 0;
+        break;
       }
     }
 
@@ -230,9 +226,9 @@ export class PhysicsEngine {
     this.onGround = false;
 
     this.position.y += this.velocity.y * deltaTime;
-    collisions = this.getBlocksIntersecting(world, this.position, this.playerWidth, height);
-
-    for (const block of collisions) {
+    collisionsCount = this.getBlocksIntersecting(world, this.position, this.playerWidth, height);
+    for (let i = 0; i < collisionsCount; i++) {
+      const block = this.collisionBuffer[i];
       // Add safety margin epsilon to prevent wall contacts from incorrectly registering as vertical head/foot collisions due to float rounding
       const overlapsX = (this.position.x + radius - 0.05 > block.minX) && (this.position.x - radius + 0.05 < block.maxX);
       const overlapsY = (this.position.y + height > block.minY) && (this.position.y < block.maxY);
@@ -266,7 +262,7 @@ export class PhysicsEngine {
 
     // Fall damage calculation & landing sound
     this.lastFallDamage = 0;
-    if (!this.onGround && !this.isFalling && this.velocity.y < -1.0) {
+    if (!this.onGround && !this.isFalling && this.velocity.y < 0) {
       // Started falling — record starting height
       this.isFalling = true;
       this.fallStartY = this.position.y;
