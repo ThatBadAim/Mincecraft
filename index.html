@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <script>
     window.onerror = function(message, source, lineno, colno, error) {
-      alert("JavaScript Error:\n" + message + "\nSource: " + source + "\nLine: " + lineno + "\nCol: " + colno + "\nStack:\n" + (error ? error.stack : ""));
+      console.error("JavaScript Error:\n" + message + "\nSource: " + source + "\nLine: " + lineno + "\nCol: " + colno + "\nStack:\n" + (error ? error.stack : ""));
       return false;
     };
   </script>
@@ -12,10 +12,15 @@
   <title>MineCraft Web Clone - Create & Explore</title>
   <meta name="description" content="A premium 3D browser-based Minecraft clone with procedural world gen, physics, day-night cycles, and block building.">
   <link rel="stylesheet" href="style.css">
-  <!-- Load Three.js from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Load PointerLockControls from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+  <!-- Load Three.js as ES Modules -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./node_modules/three/build/three.module.js",
+        "three/addons/": "./node_modules/three/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
   <!-- SVG Gradients for half-hearts and half-hunger -->
@@ -151,8 +156,10 @@
             <div>Jump</div>
             <div class="key-cap-mc">SHIFT</div>
             <div>Sprint</div>
+            <div class="key-cap-mc">CTRL</div>
+            <div>Crouch</div>
             <div class="key-cap-mc">C</div>
-            <div>Crouch / Crafting Menu</div>
+            <div>Crafting Menu</div>
             <div class="key-cap-mc">LEFT CLICK</div>
             <div>Break targeted block</div>
             <div class="key-cap-mc">RIGHT CLICK</div>

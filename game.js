@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { PhysicsEngine } from './physics.js';
 import { WorldManager } from './world.js';
 import { BLOCKS, BLOCK_INFO } from './constants.js';
@@ -19,6 +21,7 @@ class GameController {
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.container.appendChild(this.renderer.domElement);
@@ -39,7 +42,7 @@ class GameController {
     });
 
     // 3. User Controls
-    this.controls = new THREE.PointerLockControls(this.camera, document.body);
+    this.controls = new PointerLockControls(this.camera, document.body);
     this.keys = {};
 
     // Active hotbar slot selection index
@@ -207,6 +210,9 @@ class GameController {
     this.updateStatsHUD();
     this.loadInventory(); // Restore inventory from localStorage
 
+    // Pre-bind animate method
+    this.animate = this.animate.bind(this);
+
     // Show loading progress
     if (this.loadingBar) this.loadingBar.style.width = '30%';
     if (this.loadingText) this.loadingText.innerText = 'Building terrain...';
@@ -256,7 +262,12 @@ class GameController {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length === 36) {
-          this.inventorySlots = parsed;
+          this.inventorySlots = parsed.map(slot => {
+            if (slot && typeof slot.type === 'number' && typeof slot.count === 'number' && BLOCK_INFO[slot.type]) {
+              return slot;
+            }
+            return null;
+          });
         }
       } catch (e) {
         console.error('Failed to parse saved inventory', e);
@@ -268,7 +279,7 @@ class GameController {
     this.ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
     this.scene.add(this.ambientLight);
 
-    this.sunLight = new THREE.DirectionalLight(0xffffff, 0.95);
+    this.sunLight = new THREE.DirectionalLight(0xffffff, 0.95 * Math.PI);
     this.sunLight.castShadow = true;
     this.sunLight.shadow.mapSize.width = 2048;
     this.sunLight.shadow.mapSize.height = 2048;
@@ -634,18 +645,6 @@ class GameController {
     hungerRow.innerHTML = hungerHtml;
   }
 
-  triggerGameOver() {
-    this.controls.unlock();
-    const goScreen = document.getElementById('screen-gameover');
-    if (goScreen) {
-      goScreen.classList.remove('hidden');
-    }
-    const menuScreen = document.getElementById('screen-menu');
-    if (menuScreen) {
-      menuScreen.classList.add('hidden');
-    }
-  }
-
   respawn() {
     this.playerHealth = 20;
     this.playerHunger = 20;
@@ -656,305 +655,6 @@ class GameController {
     }
     this.teleportToGround();
     this.controls.lock();
-  }
-
-  setupEvents() {
-    const playBtn = document.getElementById('btn-play');
-    const menuScreen = document.getElementById('screen-menu');
-    const inventoryScreen = document.getElementById('inventory-screen');
-    const craftingScreen = document.getElementById('crafting-screen');
-
-    // Load settings from localStorage
-    const savedVol = localStorage.getItem('minecraft_clone_volume');
-    const savedFov = localStorage.getItem('minecraft_clone_fov');
-    const savedDist = localStorage.getItem('minecraft_clone_render_dist');
-    const savedSens = localStorage.getItem('minecraft_clone_sensitivity');
-
-    const volVal = savedVol !== null ? parseFloat(savedVol) : 0.7;
-    const fovVal = savedFov !== null ? parseInt(savedFov, 10) : 75;
-    const distVal = savedDist !== null ? parseInt(savedDist, 10) : 6;
-    const sensVal = savedSens !== null ? parseFloat(savedSens) : 1.0;
-
-    // Apply values to UI elements
-    const sliderVol = document.getElementById('slider-volume');
-    const sliderFov = document.getElementById('slider-fov');
-    const sliderDist = document.getElementById('slider-render-dist');
-    const sliderSens = document.getElementById('slider-sensitivity');
-
-    const labelVol = document.getElementById('val-volume');
-    const labelFov = document.getElementById('val-fov');
-    const labelDist = document.getElementById('val-render-dist');
-    const labelSens = document.getElementById('val-sensitivity');
-
-    if (sliderVol) {
-      sliderVol.value = volVal;
-      labelVol.innerText = Math.round(volVal * 100) + '%';
-      gameAudio.setVolume(volVal);
-      sliderVol.addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value);
-        labelVol.innerText = Math.round(val * 100) + '%';
-        gameAudio.setVolume(val);
-        localStorage.setItem('minecraft_clone_volume', val);
-      });
-    }
-
-    if (sliderFov) {
-      sliderFov.value = fovVal;
-      labelFov.innerText = fovVal + '°';
-      this.camera.fov = fovVal;
-      this.camera.updateProjectionMatrix();
-      sliderFov.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value, 10);
-        labelFov.innerText = val + '°';
-        this.camera.fov = val;
-        this.camera.updateProjectionMatrix();
-        localStorage.setItem('minecraft_clone_fov', val);
-      });
-    }
-
-    if (sliderDist) {
-      sliderDist.value = distVal;
-      labelDist.innerText = distVal + ' Chunks';
-      this.world.renderRadius = distVal;
-      sliderDist.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value, 10);
-        labelDist.innerText = val + ' Chunks';
-        this.world.renderRadius = val;
-        localStorage.setItem('minecraft_clone_render_dist', val);
-      });
-    }
-
-    if (sliderSens) {
-      sliderSens.value = sensVal;
-      labelSens.innerText = sensVal.toFixed(1) + 'x';
-      this.controls.pointerSpeed = sensVal;
-      sliderSens.addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value);
-        labelSens.innerText = val.toFixed(1) + 'x';
-        this.controls.pointerSpeed = val;
-        localStorage.setItem('minecraft_clone_sensitivity', val);
-      });
-    }
-
-    // Controls locking
-    playBtn.addEventListener('click', () => {
-      if (this.playerHealth <= 0) return;
-      this.controls.lock();
-      gameAudio.resume();
-    });
-
-    this.controls.addEventListener('lock', () => {
-      if (this.playerHealth <= 0) return;
-      menuScreen.classList.add('hidden');
-      inventoryScreen.classList.add('hidden');
-      craftingScreen.classList.add('hidden');
-      this.isInventoryOpen = false;
-      this.isCraftingOpen = false;
-    });
-
-    this.controls.addEventListener('unlock', () => {
-      this.isMouseDown = false;
-      this.isBreaking = false;
-      this.breakProgress = 0;
-      this.breakTarget = null;
-      if (this.breakingOverlay) {
-        this.breakingOverlay.visible = false;
-      }
-      if (this.playerHealth <= 0) {
-        document.getElementById('screen-gameover').classList.remove('hidden');
-        document.getElementById('screen-menu').classList.add('hidden');
-        return;
-      }
-      if (!this.isInventoryOpen && !this.isCraftingOpen) {
-        menuScreen.classList.remove('hidden');
-      }
-    });
-
-    const respawnBtn = document.getElementById('btn-respawn');
-    if (respawnBtn) {
-      respawnBtn.addEventListener('click', () => {
-        this.respawn();
-      });
-    }
-
-    // Close overlays when clicking outside
-    inventoryScreen.addEventListener('click', (e) => {
-      if (e.target === inventoryScreen) {
-        this.controls.lock();
-      }
-    });
-
-    // 2x2 Crafting Grid click bindings
-    for (let i = 0; i < 4; i++) {
-      const inputEl = document.getElementById(`craft-in-${i}`);
-      if (inputEl) {
-        inputEl.addEventListener('click', () => this.handleCraftInputClick(i));
-      }
-    }
-    const craftOutputEl = document.getElementById('craft-out');
-    if (craftOutputEl) {
-      craftOutputEl.addEventListener('click', () => this.handleCraftOutputClick());
-    }
-    craftingScreen.addEventListener('click', (e) => {
-      if (e.target === craftingScreen) {
-        this.controls.lock();
-      }
-    });
-
-    // Keys
-    window.addEventListener('keydown', (e) => {
-      if (this.playerHealth <= 0) return;
-      this.keys[e.code] = true;
-
-      // Reset coordinates if stuck
-      if (e.code === 'KeyR') {
-        this.teleportToGround();
-      }
-
-      // Eat Meat when pressing F
-      if (e.code === 'KeyF') {
-        const meatCount = this.getInventoryCount(BLOCKS.MEAT);
-        if (this.playerHunger < 20 && meatCount > 0) {
-          this.consumeFromInventory(BLOCKS.MEAT, 1);
-          this.playerHunger = Math.min(20, this.playerHunger + 4);
-          this.updateStatsHUD();
-          this.buildHotbarUI();
-          this.buildInventoryGridUI();
-          if (gameAudio && gameAudio.playPlaceSound) {
-            gameAudio.playPlaceSound();
-          }
-        }
-      }
-
-      // Hotbar selection keys
-      if (e.key >= '1' && e.key <= '9') {
-        this.activeSlotIndex = parseInt(e.key) - 1;
-        this.updateActiveHotbarSlot();
-      }
-
-      // Toggle inventory
-      if (e.code === 'KeyE') {
-        if (this.isInventoryOpen) {
-          this.controls.lock();
-        } else {
-          this.isInventoryOpen = true;
-          this.isCraftingOpen = false;
-          this.controls.unlock();
-          inventoryScreen.classList.remove('hidden');
-          craftingScreen.classList.add('hidden');
-          menuScreen.classList.add('hidden');
-          this.buildInventoryGridUI(); // Draw grids dynamically!
-        }
-      }
-
-      // Toggle crafting menu
-      if (e.code === 'KeyC') {
-        if (this.isCraftingOpen) {
-          this.controls.lock();
-        } else {
-          this.isCraftingOpen = true;
-          this.isInventoryOpen = false;
-          this.controls.unlock();
-          craftingScreen.classList.remove('hidden');
-          inventoryScreen.classList.add('hidden');
-          menuScreen.classList.add('hidden');
-          this.buildCraftingUI();
-        }
-      }
-
-      // Toggle minimap
-      if (e.code === 'KeyM') {
-        this.minimapVisible = !this.minimapVisible;
-        const minimapEl = document.getElementById('minimap-container');
-        if (minimapEl) {
-          minimapEl.style.display = this.minimapVisible ? 'flex' : 'none';
-        }
-      }
-    });
-
-    window.addEventListener('keyup', (e) => {
-      this.keys[e.code] = false;
-    });
-
-    // Mouse wheel for hotbar selection
-    window.addEventListener('wheel', (e) => {
-      if (!this.controls.isLocked || this.playerHealth <= 0) return;
-      if (this.isInventoryOpen || this.isCraftingOpen) return;
-
-      if (e.deltaY > 0) {
-        this.activeSlotIndex = (this.activeSlotIndex + 1) % 9;
-      } else {
-        this.activeSlotIndex = (this.activeSlotIndex - 1 + 9) % 9;
-      }
-      this.updateActiveHotbarSlot();
-    });
-
-    // Clear stuck keys on window blur
-    window.addEventListener('blur', () => {
-      this.keys = {};
-      this.isMouseDown = false;
-      this.isBreaking = false;
-      this.breakProgress = 0;
-      this.breakTarget = null;
-      if (this.breakingOverlay) {
-        this.breakingOverlay.visible = false;
-      }
-    });
-
-    // Window Resize
-    window.addEventListener('resize', () => {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // Mouse Clicks for Blocks
-    window.addEventListener('mousedown', (e) => {
-      if (!this.controls.isLocked || this.playerHealth <= 0) return;
-
-      if (e.button === 0) {
-        this.isMouseDown = true;
-        // Attack Animal first
-        if (this.entityManager && this.entityManager.checkHit(this.camera, this.raycaster)) {
-          return;
-        }
-        // Start breaking
-        this.isBreaking = true;
-        this.breakProgress = 0;
-        if (this.targetBlock) {
-          this.breakTarget = { x: this.targetBlock.x, y: this.targetBlock.y, z: this.targetBlock.z };
-        }
-      } else if (e.button === 2) {
-        // Check if targeted block is a Crafting Table block
-        if (this.targetBlock) {
-          const block = this.world.getBlock(this.targetBlock.x, this.targetBlock.y, this.targetBlock.z);
-          if (block && block.type === BLOCKS.CRAFTING_TABLE) {
-            this.isCraftingOpen = true;
-            this.isInventoryOpen = false;
-            this.controls.unlock();
-            craftingScreen.classList.remove('hidden');
-            inventoryScreen.classList.add('hidden');
-            menuScreen.classList.add('hidden');
-            this.buildCraftingUI();
-            return;
-          }
-        }
-        // Place Block
-        this.placeTargetBlock();
-      }
-    });
-
-    window.addEventListener('mouseup', (e) => {
-      if (e.button === 0) {
-        this.isMouseDown = false;
-        this.isBreaking = false;
-        this.breakProgress = 0;
-        this.breakTarget = null;
-        if (this.breakingOverlay) {
-          this.breakingOverlay.visible = false;
-        }
-      }
-    });
   }
 
   buildHotbarUI() {
@@ -1486,36 +1186,78 @@ class GameController {
   }
 
   updateRaycastTarget() {
-    // Shoot ray from center camera forward
-    if (!this.centerVec) this.centerVec = new THREE.Vector2(0, 0);
-    this.raycaster.setFromCamera(this.centerVec, this.camera);
+    const maxDist = 6;
+    let tMaxX, tMaxY, tMaxZ, tDeltaX, tDeltaY, tDeltaZ;
+    let x = Math.floor(this.camera.position.x);
+    let y = Math.floor(this.camera.position.y);
+    let z = Math.floor(this.camera.position.z);
 
-    // Use cached mesh array for high-performance raycasting
-    const intersects = this.raycaster.intersectObjects(this.world.meshList);
+    this.camera.getWorldDirection(this.camDirCache);
+    const dx = this.camDirCache.x;
+    const dy = this.camDirCache.y;
+    const dz = this.camDirCache.z;
 
-    if (intersects.length > 0) {
-      const hit = intersects[0];
-      const point = hit.point;
-      const normal = hit.face.normal;
+    const stepX = Math.sign(dx);
+    const stepY = Math.sign(dy);
+    const stepZ = Math.sign(dz);
 
-      // Shift slightly along the normal to determine block coordinates inside the voxel grid
-      // For breaking, shift -0.5 normal. For placing, shift +0.5 normal.
-      const breakX = Math.floor(point.x - normal.x * 0.1);
-      const breakY = Math.floor(point.y - normal.y * 0.1);
-      const breakZ = Math.floor(point.z - normal.z * 0.1);
+    if (dx !== 0) tDeltaX = Math.min(dx * stepX, 1);
+    if (dy !== 0) tDeltaY = Math.min(dy * stepY, 1);
+    if (dz !== 0) tDeltaZ = Math.min(dz * stepZ, 1);
 
-      const placeX = Math.floor(point.x + normal.x * 0.5);
-      const placeY = Math.floor(point.y + normal.y * 0.5);
-      const placeZ = Math.floor(point.z + normal.z * 0.5);
+    tDeltaX = dx !== 0 ? Math.abs(1 / dx) : Infinity;
+    tDeltaY = dy !== 0 ? Math.abs(1 / dy) : Infinity;
+    tDeltaZ = dz !== 0 ? Math.abs(1 / dz) : Infinity;
+
+    tMaxX = dx > 0 ? (x + 1 - this.camera.position.x) * tDeltaX : (this.camera.position.x - x) * tDeltaX;
+    tMaxY = dy > 0 ? (y + 1 - this.camera.position.y) * tDeltaY : (this.camera.position.y - y) * tDeltaY;
+    tMaxZ = dz > 0 ? (z + 1 - this.camera.position.z) * tDeltaZ : (this.camera.position.z - z) * tDeltaZ;
+
+    let hitNormal = new THREE.Vector3();
+    let hitBlock = null;
+
+    for (let i = 0; i < maxDist * 3; i++) {
+      if (tMaxX < tMaxY) {
+        if (tMaxX < tMaxZ) {
+          x += stepX;
+          tMaxX += tDeltaX;
+          hitNormal.set(-stepX, 0, 0);
+        } else {
+          z += stepZ;
+          tMaxZ += tDeltaZ;
+          hitNormal.set(0, 0, -stepZ);
+        }
+      } else {
+        if (tMaxY < tMaxZ) {
+          y += stepY;
+          tMaxY += tDeltaY;
+          hitNormal.set(0, -stepY, 0);
+        } else {
+          z += stepZ;
+          tMaxZ += tDeltaZ;
+          hitNormal.set(0, 0, -stepZ);
+        }
+      }
+
+      const block = this.world.getBlock(x, y, z);
+      if (block && block.type !== BLOCKS.AIR && block.type !== BLOCKS.WATER) {
+        hitBlock = { x, y, z };
+        break;
+      }
+    }
+
+    if (hitBlock) {
+      const placeX = hitBlock.x + hitNormal.x;
+      const placeY = hitBlock.y + hitNormal.y;
+      const placeZ = hitBlock.z + hitNormal.z;
 
       this.targetBlock = {
-        x: breakX, y: breakY, z: breakZ,
+        x: hitBlock.x, y: hitBlock.y, z: hitBlock.z,
         placeX, placeY, placeZ,
-        faceNormal: normal
+        faceNormal: hitNormal
       };
 
-      // Move outline to targeted voxel coordinate
-      this.selectionOutline.position.set(breakX + 0.5, breakY + 0.5, breakZ + 0.5);
+      this.selectionOutline.position.set(hitBlock.x + 0.5, hitBlock.y + 0.5, hitBlock.z + 0.5);
       this.selectionOutline.visible = true;
     } else {
       this.targetBlock = null;
@@ -1935,8 +1677,8 @@ class GameController {
     }
 
     if (this.physics.inWater) {
-      this.renderer.setClearColor(new THREE.Color(0x0a1e35));
-      this.scene.fog.color = new THREE.Color(0x0f2a4a);
+      this.renderer.setClearColor(this.waterFogClearColor);
+      this.scene.fog.color = this.waterFogColor;
       this.scene.fog.density = 0.08;
     } else {
       this.renderer.setClearColor(skyColor);
@@ -1959,16 +1701,18 @@ class GameController {
     this.fpsFrames++;
     const now = performance.now();
     if (now - this.fpsLastUpdate >= 1000) {
-      document.getElementById('fps-counter').innerText = this.fpsFrames;
+      const fpsCounter = document.getElementById('fps-counter');
+      if (fpsCounter) fpsCounter.innerText = this.fpsFrames;
       this.fpsFrames = 0;
       this.fpsLastUpdate = now;
     }
   }
 
   animate() {
-    requestAnimationFrame(() => this.animate());
+    requestAnimationFrame(this.animate);
 
-    const dt = this.clock.getDelta();
+    let dt = this.clock.getDelta();
+    if (dt > 0.1) dt = 0.1; // clamp delta time to avoid large jumps when tab is backgrounded
     this.updateFPS();
 
     if (this.controls.isLocked) {
@@ -2062,7 +1806,8 @@ class GameController {
           const px = this.physics.position.x.toFixed(1);
           const py = this.physics.position.y.toFixed(1);
           const pz = this.physics.position.z.toFixed(1);
-          document.getElementById('player-pos').innerText = `${px}, ${py}, ${pz}`;
+          const posEl = document.getElementById('player-pos');
+          if (posEl) posEl.innerText = `${px}, ${py}, ${pz}`;
 
           const oxBar = document.getElementById('oxygen-bar-container');
           if (oxBar) {
@@ -2174,6 +1919,8 @@ class GameController {
         const val = parseInt(e.target.value, 10);
         labelDist.innerText = val + ' Chunks';
         this.world.renderRadius = val;
+        this.world.lastPlayerChunkX = null; // force chunk regen around player
+        this.world.lastPlayerChunkZ = null;
         localStorage.setItem('minecraft_clone_render_dist', val);
       });
     }
@@ -2191,11 +1938,14 @@ class GameController {
     }
 
     // Controls locking
-    playBtn.addEventListener('click', () => {
-      if (this.playerHealth <= 0) return;
-      this.controls.lock();
-      gameAudio.resume();
-    });
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        if (this.playerHealth <= 0) return;
+        this.controls.lock();
+        gameAudio.resume();
+      });
+    }
+
 
     this.controls.addEventListener('lock', () => {
       if (this.playerHealth <= 0) return;

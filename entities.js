@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { gameAudio } from './audio.js';
 import { BLOCKS } from './constants.js';
 
@@ -474,6 +475,8 @@ export class EntityManager {
     this.onCollect = onCollect;
     this.animals = [];
     this.collectibles = [];
+    this.animalMeshesCache = []; // Cache to avoid recreating array every click
+    this.centerVec = new THREE.Vector2(0, 0);
 
     this.counts = {
       meat: 0,
@@ -558,7 +561,7 @@ export class EntityManager {
   }
 
   checkHit(camera, raycaster) {
-    raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+    raycaster.setFromCamera(this.centerVec, camera);
     const meshes = this.getAnimalMeshes();
     const intersects = raycaster.intersectObjects(meshes);
 
