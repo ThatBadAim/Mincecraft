@@ -21,6 +21,10 @@
       }
     }
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/styles/minecraft-theme.css">
 </head>
 <body>
   <!-- SVG Gradients for half-hearts and half-hunger -->
@@ -38,7 +42,7 @@
   </svg>
 
   <!-- Loading Screen -->
-  <div id="loading-screen">
+  <div id="loading-screen" class="MinecraftLoadingScreen">
     <div class="loading-content">
       <h1 class="loading-title">MINECRAFT CLONE</h1>
       <div class="loading-bar-container">
@@ -102,14 +106,14 @@
 
   <!-- Menu / Play Screen Overlay -->
   <div id="screen-menu" class="overlay">
-    <div class="mc-panel" style="width: 600px; padding: 28px 36px; display: flex; flex-direction: column; gap: 20px; align-items: center; border-radius: 0;">
+    <div class="MinecraftPanel" style="width: 600px; padding: 28px 36px; display: flex; flex-direction: column; gap: 20px; align-items: center; border-radius: 0;">
 
       <h2 style="font-family: var(--font-retro); font-size: 14px; color: #fff; text-shadow: 2px 2px 0px #000; margin: 0; text-align: center; letter-spacing: 1px;">GAME OPTIONS</h2>
 
       <!-- Sliders 2x2 Grid -->
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%;">
         <!-- Volume Slider -->
-        <div class="mc-option">
+        <div class="mc-option MinecraftInput">
           <div class="mc-option-label">
             <span>MASTER VOLUME</span>
             <span id="val-volume">70%</span>
@@ -118,7 +122,7 @@
         </div>
 
         <!-- FOV Slider -->
-        <div class="mc-option">
+        <div class="mc-option MinecraftInput">
           <div class="mc-option-label">
             <span>FIELD OF VIEW (FOV)</span>
             <span id="val-fov">75°</span>
@@ -127,7 +131,7 @@
         </div>
 
         <!-- Render Distance Slider -->
-        <div class="mc-option">
+        <div class="mc-option MinecraftInput">
           <div class="mc-option-label">
             <span>RENDER DISTANCE</span>
             <span id="val-render-dist">6 CHUNKS</span>
@@ -136,7 +140,7 @@
         </div>
 
         <!-- Mouse Sensitivity Slider -->
-        <div class="mc-option">
+        <div class="mc-option MinecraftInput">
           <div class="mc-option-label">
             <span>MOUSE SENSITIVITY</span>
             <span id="val-sensitivity">1.0x</span>
@@ -175,14 +179,14 @@
       </div>
 
       <!-- Done Button -->
-      <button id="btn-play" class="btn-mc" style="width: 200px; margin-top: 4px;">DONE</button>
+      <button id="btn-play" class="MinecraftButton" style="width: 200px; margin-top: 4px;"><span>DONE</span></button>
 
     </div>
   </div>
 
   <!-- Inventory Overlay Screen -->
   <div id="inventory-screen" class="overlay hidden">
-    <div class="glass-panel" style="width: 580px;">
+    <div class="MinecraftPanel" style="width: 580px;">
       <h2>INVENTORY</h2>
 
       <!-- 2x2 Crafting Grid -->
@@ -221,7 +225,7 @@
 
   <!-- Crafting Overlay Screen -->
   <div id="crafting-screen" class="overlay hidden">
-    <div class="glass-panel">
+    <div class="MinecraftPanel">
       <h2>CRAFTING MENU</h2>
 
       <div class="crafting-list" id="craft-list">
@@ -237,10 +241,10 @@
 
   <!-- Game Over Screen Overlay -->
   <div id="screen-gameover" class="overlay hidden">
-    <div class="glass-panel" style="border-color: rgba(255, 74, 74, 0.3); box-shadow: 0 12px 40px 0 rgba(255, 0, 0, 0.2);">
+    <div class="MinecraftPanel" style="border-color: rgba(255, 74, 74, 0.3); box-shadow: 0 12px 40px 0 rgba(255, 0, 0, 0.2);">
       <h1 style="color: #ff4a4a; text-shadow: 0 4px 12px rgba(255, 74, 74, 0.4); font-family: 'Press Start 2P', monospace; font-size: 24px; margin-bottom: 24px;">GAME OVER</h1>
       <p style="margin-bottom: 28px; color: var(--text-muted); font-size: 14px; text-align: center;">You were defeated by the monsters of the night.</p>
-      <button id="btn-respawn" class="btn-primary" style="background: #ff4a4a; box-shadow: 0 4px 14px rgba(255, 74, 74, 0.4);">RESPAWN</button>
+      <button id="btn-respawn" class="MinecraftButton" style="background: #ff4a4a; box-shadow: 0 4px 14px rgba(255, 74, 74, 0.4);"><span>RESPAWN</span></button>
     </div>
   </div>
 

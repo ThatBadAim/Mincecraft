@@ -1,0 +1,240 @@
+:root {
+  /* Color Palette */
+  --mc-color-dirt: #4a3321;
+  --mc-color-gui-bg: #c6c6c6;
+  --mc-color-gui-border-light: #ffffff;
+  --mc-color-gui-border-dark: #555555;
+  --mc-color-gui-shadow: #373737;
+
+  --mc-btn-bg-default: #707070;
+  --mc-btn-bg-hover: #5a759e;
+  --mc-btn-bg-active: #4a5c78;
+  --mc-btn-bg-disabled: #3a3a3a;
+  --mc-btn-border-top: #a8a8a8;
+  --mc-btn-border-bottom: #2b2b2b;
+
+  --mc-text-default: #e0e0e0;
+  --mc-text-shadow: #3f3f3f;
+  --mc-text-yellow: #ffff55;
+  --mc-text-disabled: #a0a0a0;
+
+  /* Typography & Pixel Scaling */
+  --mc-font-main: 'Minecraftia', 'VT323', monospace;
+  --mc-pixel-scale: 2px;
+}
+
+/* Global Crisp Pixel Rendering */
+*, *::before, *::after {
+  image-rendering: pixelated !important;
+  image-rendering: crisp-edges !important;
+  font-smooth: never !important;
+  -webkit-font-smoothing: none !important;
+}
+
+body {
+  font-family: var(--mc-font-main);
+  background-color: #111111;
+  color: var(--mc-text-default);
+  margin: 0;
+  padding: 0;
+}
+
+/* MinecraftButton */
+.MinecraftButton {
+  background-color: var(--mc-btn-bg-default);
+  border: var(--mc-pixel-scale) solid;
+  border-top-color: var(--mc-btn-border-top);
+  border-left-color: var(--mc-btn-border-top);
+  border-bottom-color: var(--mc-btn-border-bottom);
+  border-right-color: var(--mc-btn-border-bottom);
+  color: var(--mc-text-default);
+  font-family: var(--mc-font-main);
+  text-shadow: 2px 2px 0px var(--mc-text-shadow);
+  padding: 8px 16px;
+  cursor: pointer;
+  text-align: center;
+  transition: none; /* Instant feedback */
+}
+
+.MinecraftButton:hover {
+  background-color: var(--mc-btn-bg-hover);
+  color: var(--mc-text-yellow);
+}
+
+.MinecraftButton:active {
+  background-color: var(--mc-btn-bg-active);
+  border-top-color: var(--mc-btn-border-bottom);
+  border-left-color: var(--mc-btn-border-bottom);
+  border-bottom-color: var(--mc-btn-border-top);
+  border-right-color: var(--mc-btn-border-top);
+}
+
+.MinecraftButton:active span {
+  display: inline-block;
+  transform: translate(1px, 1px);
+}
+
+.MinecraftButton:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* MinecraftPanel */
+.MinecraftPanel {
+  background-color: var(--mc-color-gui-bg);
+  border: var(--mc-pixel-scale) solid;
+  border-top-color: var(--mc-color-gui-border-light);
+  border-left-color: var(--mc-color-gui-border-light);
+  border-bottom-color: var(--mc-color-gui-border-dark);
+  border-right-color: var(--mc-color-gui-border-dark);
+  padding: 16px;
+}
+
+.MinecraftPanel h2, .MinecraftPanel h1 {
+  text-shadow: 2px 2px 0px var(--mc-text-shadow);
+  font-family: var(--mc-font-main);
+}
+
+@keyframes splash-pulse {
+  0% { transform: scale(1) rotate(-20deg); }
+  50% { transform: scale(1.1) rotate(-20deg); }
+  100% { transform: scale(1) rotate(-20deg); }
+}
+
+.splash-text {
+  color: var(--mc-text-yellow);
+  text-shadow: 2px 2px 0px var(--mc-text-shadow);
+  animation: splash-pulse 1s infinite;
+  display: inline-block;
+}
+
+/* MinecraftInput */
+.MinecraftInput, .MinecraftInput input[type="range"] {
+  background-color: #000000;
+  border: var(--mc-pixel-scale) solid;
+  border-top-color: #373737;
+  border-left-color: #373737;
+  border-bottom-color: #a8a8a8;
+  border-right-color: #a8a8a8;
+  color: #ffffff;
+  font-family: var(--mc-font-main);
+  padding: 4px;
+}
+
+.MinecraftInput:focus {
+  outline: none;
+  /* Pulsing yellow cursor */
+}
+
+/* MinecraftLoadingScreen */
+.MinecraftLoadingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: #ef323d; /* Mojang Red */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.MinecraftLoadingScreen.fade-out-loading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.MinecraftLoadingScreen .loading-bar-container {
+  width: 400px;
+  height: 20px;
+  background: #c6c6c6;
+  border: var(--mc-pixel-scale) solid #000000;
+  box-shadow: inset 2px 2px 0px #555555;
+  overflow: hidden;
+  position: relative;
+}
+
+.MinecraftLoadingScreen .loading-bar-fill {
+  width: 0%;
+  height: 100%;
+  background-color: #55ff55;
+  transition: width 0.3s ease;
+}
+
+.MinecraftLoadingScreen .loading-text {
+  position: relative;
+  margin-top: 10px;
+  color: #ffffff;
+  text-shadow: 2px 2px 0px #373737;
+  font-family: var(--mc-font-main);
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+}
+
+
+/* Fix Sliders */
+.MinecraftInput input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #000000;
+  border: 1px solid #5a5a5a;
+  outline: none;
+  margin: 4px 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.MinecraftInput input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 18px;
+  background: #5c5c5c;
+  border: 2px solid;
+  border-color: #ffffff #373737 #373737 #ffffff;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.MinecraftInput input[type="range"]::-webkit-slider-thumb:hover {
+  background: #7c7c7c;
+  border-color: #ffffff #555555 #555555 #ffffff;
+}
+
+/* Fix HUD Elements */
+.stats-card, #controls-hint {
+  background-color: var(--mc-color-gui-bg) !important;
+  border: var(--mc-pixel-scale) solid !important;
+  border-top-color: var(--mc-color-gui-border-light) !important;
+  border-left-color: var(--mc-color-gui-border-light) !important;
+  border-bottom-color: var(--mc-color-gui-border-dark) !important;
+  border-right-color: var(--mc-color-gui-border-dark) !important;
+  border-radius: 0 !important;
+  color: var(--mc-text-default) !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
+  backdrop-filter: none !important;
+}
+
+.inv-slot {
+  background-color: #8b8b8b !important;
+  border: 2px solid !important;
+  border-top-color: #373737 !important;
+  border-left-color: #373737 !important;
+  border-bottom-color: #ffffff !important;
+  border-right-color: #ffffff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.inv-slot.selected, .inv-slot:hover {
+  background-color: #c6c6c6 !important;
+  border-color: #ffffff !important;
+}
+
+.slot-count, .active-item-name {
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
+  font-family: var(--mc-font-main) !important;
+}
