@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { PhysicsEngine } from './physics.js';
 import { WorldManager } from './world.js';
 import { BLOCKS, BLOCK_INFO } from './constants.js';
@@ -105,7 +108,7 @@ class GameController {
         result: BLOCKS.BRICK,
         resultCount: 1,
         ingredients: [
-          { type: BLOCKS.PLANKS, count: 4 }
+          { type: BLOCKS.DIRT, count: 4 }
         ]
       },
       {
@@ -333,17 +336,26 @@ class GameController {
       transparent: true,
       opacity: 0
     });
-    this.stars = new THREE.Points(geo, mat);
-    this.scene.add(this.stars);
+    this.starsMesh = new THREE.Points(geo, mat);
+    this.scene.add(this.starsMesh);
   }
 
   setupSelectionOutline() {
     const geo = new THREE.BoxGeometry(1.002, 1.002, 1.002);
     const edges = new THREE.EdgesGeometry(geo);
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
-    this.selectionOutline = new THREE.LineSegments(edges, lineMat);
+    const lineGeo = new LineSegmentsGeometry().fromEdgesGeometry(edges);
+    const lineMat = new LineMaterial({ color: 0x000000, linewidth: 2 });
+    lineMat.resolution.set(window.innerWidth, window.innerHeight); // Required for LineMaterial
+    this.selectionOutline = new LineSegments2(lineGeo, lineMat);
     this.selectionOutline.visible = false;
     this.scene.add(this.selectionOutline);
+
+    // Ensure line resolution updates on window resize
+    window.addEventListener('resize', () => {
+      if (this.selectionOutline && this.selectionOutline.material) {
+        this.selectionOutline.material.resolution.set(window.innerWidth, window.innerHeight);
+      }
+    });
   }
 
   setupBreakingOverlay() {
@@ -648,6 +660,16 @@ class GameController {
   respawn() {
     this.playerHealth = 20;
     this.playerHunger = 20;
+
+    if (this.entityManager) {
+      this.entityManager.counts.meat = 0;
+      this.entityManager.counts.wool = 0;
+      const meatEl = document.getElementById('meat-count');
+      if (meatEl) meatEl.innerText = '0';
+      const woolEl = document.getElementById('wool-count');
+      if (woolEl) woolEl.innerText = '0';
+    }
+
     this.updateStatsHUD();
     const goScreen = document.getElementById('screen-gameover');
     if (goScreen) {
@@ -848,16 +870,16 @@ class GameController {
         // Simply select the craft input item and clear slot
         // To behave exactly like swap, we find first empty inventory slot or just select it
         // A simple direct swap is cleanest:
-        const firstEmptyIndex = this.inventorySlots.indexOf(null);
-        if (firstEmptyIndex !== -1) {
+        const slotsOrder = [...Array(9).keys()].map(x => x + 27).concat([...Array(27).keys()]);
+        const firstEmptyIndex = slotsOrder.find(idx => this.inventorySlots[idx] === null);
+        if (firstEmptyIndex !== undefined) {
           this.inventorySlots[firstEmptyIndex] = this.inventoryCraftGrid[i];
           this.inventoryCraftGrid[i] = null;
         }
       }
     }
     this.check2x2Crafting();
-    this.buildInventoryGridUI();
-    this.buildHotbarUI();
+    this.scheduleUIRefresh();
   }
 
   handleCraftOutputClick() {
@@ -879,14 +901,13 @@ class GameController {
         }
         gameAudio.playPlaceSound();
         this.check2x2Crafting();
-        this.buildInventoryGridUI();
-        this.buildHotbarUI();
+        this.scheduleUIRefresh();
       }
     }
   }
 
   check2x2Crafting() {
-    const grid = this.inventoryCraftGrid;
+    const grid = this.inventoryCraftGrid.map(s => (s && s.count > 0) ? s : null);
     const slot0 = grid[0];
     const slot1 = grid[1];
     const slot2 = grid[2];
@@ -933,8 +954,7 @@ class GameController {
       this.inventorySlots[index] = temp;
       this.selectedInventorySlotIndex = null;
     }
-    this.buildInventoryGridUI();
-    this.buildHotbarUI();
+    this.scheduleUIRefresh();
     this.updateActiveHotbarSlot();
   }
 
@@ -1010,8 +1030,7 @@ class GameController {
 
         gameAudio.playPlaceSound();
         this.buildCraftingUI();
-        this.buildHotbarUI();
-        this.buildInventoryGridUI();
+        this.scheduleUIRefresh();
       });
 
       card.appendChild(btn);
@@ -1201,10 +1220,6 @@ class GameController {
     const stepY = Math.sign(dy);
     const stepZ = Math.sign(dz);
 
-    if (dx !== 0) tDeltaX = Math.min(dx * stepX, 1);
-    if (dy !== 0) tDeltaY = Math.min(dy * stepY, 1);
-    if (dz !== 0) tDeltaZ = Math.min(dz * stepZ, 1);
-
     tDeltaX = dx !== 0 ? Math.abs(1 / dx) : Infinity;
     tDeltaY = dy !== 0 ? Math.abs(1 / dy) : Infinity;
     tDeltaZ = dz !== 0 ? Math.abs(1 / dz) : Infinity;
@@ -1346,7 +1361,7 @@ class GameController {
         this.world.updateChunkMesh(cx + ox, cz + oz);
       }
     }
-    gameAudio.playBreakSound(); // Replace with explosion sound later
+    gameAudio.playExplosionSound(); // Replaced with explosion sound
 
     // Damage player if close
     const distSq = Math.pow(this.physics.position.x - x, 2) + Math.pow(this.physics.position.y - y, 2) + Math.pow(this.physics.position.z - z, 2);
@@ -1626,12 +1641,17 @@ class GameController {
       this.moonMesh.lookAt(px, py, pz);
     }
 
+    if (this.starsMesh) {
+      this.starsMesh.position.set(px, py, pz);
+    }
+
     // Compute ambient sky colors based on sun altitude (sunY: -1 to 1)
     let skyColor, fogColor, sunIntensity, starOpacity;
     let cloudColor, cloudOpacity;
 
     if (!this.skyColorCache) {
       this.skyColorCache = new THREE.Color();
+      this.fogColorCache = new THREE.Color();
       this.cloudColorCache = new THREE.Color();
       this.nightSky = new THREE.Color(0x060613);
       this.daySky = new THREE.Color(0x8bc0d9);
@@ -1644,8 +1664,9 @@ class GameController {
     if (sunY > 0.1) {
       // Day
       this.skyColorCache.copy(this.daySky);
+      this.fogColorCache.copy(this.daySky);
       skyColor = this.skyColorCache;
-      fogColor = this.skyColorCache;
+      fogColor = this.fogColorCache;
       sunIntensity = 0.95;
       starOpacity = 0.0;
       this.cloudColorCache.copy(this.dayCloud);
@@ -1655,8 +1676,9 @@ class GameController {
       // Sunrise / Sunset transition
       const t = (sunY + 0.1) / 0.2; // 0 to 1
       this.skyColorCache.lerpColors(this.sunsetSky, this.daySky, t);
+      this.fogColorCache.lerpColors(this.sunsetSky, this.daySky, t);
       skyColor = this.skyColorCache;
-      fogColor = this.skyColorCache;
+      fogColor = this.fogColorCache;
       sunIntensity = 0.95 * t;
       starOpacity = (1.0 - t) * 0.8;
 
@@ -1667,8 +1689,9 @@ class GameController {
     } else {
       // Night
       this.skyColorCache.copy(this.nightSky);
+      this.fogColorCache.copy(this.nightSky);
       skyColor = this.skyColorCache;
-      fogColor = this.skyColorCache;
+      fogColor = this.fogColorCache;
       sunIntensity = 0.0;
       starOpacity = 0.85;
       this.cloudColorCache.copy(this.nightCloud);
@@ -1692,8 +1715,8 @@ class GameController {
       this.cloudMaterial.opacity = cloudOpacity;
     }
 
-    if (this.stars) {
-      this.stars.material.opacity = starOpacity;
+    if (this.starsMesh) {
+      this.starsMesh.material.opacity = starOpacity;
     }
   }
 
@@ -1745,7 +1768,7 @@ class GameController {
 
         // Hunger decay
         this.hungerTimer += dt;
-        const rate = (this.physics.isSprinting ? 2.5 : 1.0) * (this.keys['Space'] ? 1.5 : 1.0);
+        const rate = (this.physics.isSprinting ? 2.5 : 1.0) * ((this.keys['Space'] && !this.physics.onGround) ? 1.5 : 1.0);
         if (this.hungerTimer >= (25.0 / rate)) {
           this.playerHunger = Math.max(0, this.playerHunger - 1);
           this.updateStatsHUD();
@@ -2006,13 +2029,13 @@ class GameController {
 
     // Keys
     window.addEventListener('keydown', (e) => {
-      if (this.playerHealth <= 0) return;
-      this.keys[e.code] = true;
-
-      // Reset coordinates if stuck
+      // Reset coordinates if stuck (allow when dead)
       if (e.code === 'KeyR') {
         this.teleportToGround();
       }
+
+      if (this.playerHealth <= 0) return;
+      this.keys[e.code] = true;
 
       // Eat Meat when pressing F
       if (e.code === 'KeyF') {

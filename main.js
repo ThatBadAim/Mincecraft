@@ -90,7 +90,9 @@ function createWindow() {
   win.setMenuBarVisibility(false); // Hide menu bar for full immersion
 
   // Open Developer Tools for performance and WebGL diagnostics
-  win.webContents.openDevTools();
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true') {
+    win.webContents.openDevTools();
+  }
 
   // Redirect renderer process console to terminal
   win.webContents.on('console-message', (event, level, message, line, sourceId) => {

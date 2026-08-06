@@ -159,7 +159,9 @@ class Animal {
     }
 
     this.velocity.y -= 9.8 * dt;
+    this.group.position.x += this.velocity.x * dt;
     this.group.position.y += this.velocity.y * dt;
+    this.group.position.z += this.velocity.z * dt;
 
     const px = this.group.position.x;
     const py = this.group.position.y;
@@ -185,9 +187,6 @@ class Animal {
         this.stateTimer = 1.0;
       }
     }
-
-    this.group.position.x += this.velocity.x * dt;
-    this.group.position.z += this.velocity.z * dt;
 
     if (this.group.position.y < 0) {
       this.group.position.y = 40;
@@ -403,22 +402,22 @@ export class Collectible {
 
   getBlockColor(type) {
     switch (type) {
-      case 1: return 0x557a2b; // GRASS
-      case 2: return 0x866043; // DIRT
-      case 3: return 0x7a7a7a; // STONE
-      case 4: return 0x6d5032; // WOOD
-      case 5: return 0x2d5e2d; // LEAVES
-      case 6: return 0xe5c185; // SAND
-      case 7: return 0xffffff; // GLASS
-      case 8: return 0xa64d3b; // BRICK
-      case 9: return 0xbf9b68; // PLANKS
-      case 11: return 0x3c2918; // PINE_WOOD
-      case 12: return 0x1b3f22; // PINE_LEAVES
-      case 13: return 0xeaeaea; // BIRCH_WOOD
-      case 14: return 0x5c9e31; // BIRCH_LEAVES
-      case 15: return 0x1e90ff; // WATER
-      case 16: return 0x8b5a2b; // STICK
-      case 17: return 0x7a7a7a; // STONE_PICKAXE
+      case BLOCKS.GRASS: return 0x557a2b; // GRASS
+      case BLOCKS.DIRT: return 0x866043; // DIRT
+      case BLOCKS.STONE: return 0x7a7a7a; // STONE
+      case BLOCKS.WOOD: return 0x6d5032; // WOOD
+      case BLOCKS.LEAVES: return 0x2d5e2d; // LEAVES
+      case BLOCKS.SAND: return 0xe5c185; // SAND
+      case BLOCKS.GLASS: return 0xffffff; // GLASS
+      case BLOCKS.BRICK: return 0xa64d3b; // BRICK
+      case BLOCKS.PLANKS: return 0xbf9b68; // PLANKS
+      case BLOCKS.PINE_WOOD: return 0x3c2918; // PINE_WOOD
+      case BLOCKS.PINE_LEAVES: return 0x1b3f22; // PINE_LEAVES
+      case BLOCKS.BIRCH_WOOD: return 0xeaeaea; // BIRCH_WOOD
+      case BLOCKS.BIRCH_LEAVES: return 0x5c9e31; // BIRCH_LEAVES
+      case BLOCKS.WATER: return 0x1e90ff; // WATER
+      case BLOCKS.STICK: return 0x8b5a2b; // STICK
+      case BLOCKS.STONE_PICKAXE: return 0x7a7a7a; // STONE_PICKAXE
       default: return 0x888888;
     }
   }
@@ -527,8 +526,7 @@ export class EntityManager {
 
     if (topBlockY !== -1) {
       const topBlock = world.getBlock(wx, topBlockY, wz);
-      // Only spawn if the highest block is Grass (1) or Sand (6)
-      if (topBlock && (topBlock.type === 1 || topBlock.type === 6)) {
+      if (topBlock && topBlock.solid) {
         const blockAbove1 = world.getBlock(wx, topBlockY + 1, wz);
         const blockAbove2 = world.getBlock(wx, topBlockY + 2, wz);
         const hasClearance = (!blockAbove1 || blockAbove1.type === 0) && (!blockAbove2 || blockAbove2.type === 0);
@@ -537,7 +535,7 @@ export class EntityManager {
           const isNight = gameTime !== undefined && (gameTime >= 18.0 || gameTime < 6.0);
           if (isNight && Math.random() > 0.4) {
             this.spawnZombie(wx + 0.5, topBlockY + 1.0, wz + 0.5);
-          } else {
+          } else if (topBlock.type === 1 || topBlock.type === 6) {
             const type = Math.random() > 0.5 ? 'sheep' : 'cow';
             this.spawnAnimal(type, wx + 0.5, topBlockY + 1.0, wz + 0.5);
           }
@@ -593,10 +591,7 @@ export class EntityManager {
       const distSq = dx * dx + dz * dz;
       if (distSq > 2304) { // 48^2
         animal.destroy();
-        const last = this.animals.pop();
-        if (i < this.animals.length) {
-          this.animals[i] = last;
-        }
+        this.animals.splice(i, 1);
         continue;
       }
 
@@ -610,10 +605,7 @@ export class EntityManager {
         );
 
         animal.destroy();
-        const last = this.animals.pop();
-        if (i < this.animals.length) {
-          this.animals[i] = last;
-        }
+        this.animals.splice(i, 1);
       }
     }
 
@@ -635,10 +627,7 @@ export class EntityManager {
 
       if (result) {
         coll.destroy();
-        const last = this.collectibles.pop();
-        if (i < this.collectibles.length) {
-          this.collectibles[i] = last;
-        }
+        this.collectibles.splice(i, 1);
       }
     }
   }
