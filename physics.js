@@ -18,6 +18,7 @@ export class PhysicsEngine {
     this.position = new THREE.Vector3(8, 60, 8); // Spawns safely high, falls down onto terrain
     this.velocity = new THREE.Vector3();
     this.onGround = false;
+    this.collisionBuffer = Array.from({ length: 512 }, () => ({ minX: 0, maxX: 0, minY: 0, maxY: 0, minZ: 0, maxZ: 0 }));
     this.isCrouching = false;
     this.isSprinting = false;
     this.inWater = false;
