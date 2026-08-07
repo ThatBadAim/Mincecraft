@@ -12,7 +12,6 @@
   <title>MineCraft Web Clone - Create & Explore</title>
   <meta name="description" content="A premium 3D browser-based Minecraft clone with procedural world gen, physics, day-night cycles, and block building.">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="src/styles/minecraft-theme.css">
   <!-- Load Three.js as ES Modules -->
   <script type="importmap">
     {
@@ -39,13 +38,13 @@
   </svg>
 
   <!-- Loading Screen -->
-  <div id="loading-screen" class="mc-loading-screen">
+  <div id="loading-screen">
     <div class="loading-content">
-      <h1 class="mc-splash-text">MINECRAFT CLONE</h1>
-      <div class="mc-loading-bar-container">
-        <div class="mc-loading-bar-fill" id="loading-bar"></div>
+      <h1 class="loading-title">MINECRAFT CLONE</h1>
+      <div class="loading-bar-container">
+        <div class="loading-bar-fill" id="loading-bar"></div>
       </div>
-      <div class="mc-loading-text" id="loading-text">Generating world...</div>
+      <div class="loading-text" id="loading-text">Generating world...</div>
     </div>
   </div>
 
@@ -176,27 +175,27 @@
       </div>
 
       <!-- Done Button -->
-      <button id="btn-play" class="mc-btn" style="width: 200px; margin-top: 4px;">DONE</button>
+      <button id="btn-play" class="btn-mc" style="width: 200px; margin-top: 4px;">DONE</button>
 
     </div>
   </div>
 
   <!-- Inventory Overlay Screen -->
   <div id="inventory-screen" class="overlay hidden">
-    <div class="mc-panel" style="width: 580px;">
-      <h2 style="color: #3f3f3f;">INVENTORY</h2>
+    <div class="glass-panel" style="width: 580px;">
+      <h2>INVENTORY</h2>
 
       <!-- 2x2 Crafting Grid -->
-      <div style="display: flex; gap: 20px; align-items: center; justify-content: center; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 12px 24px; border: 1px solid rgba(255,255,255,0.05);">
+      <div style="display: flex; gap: 20px; align-items: center; justify-content: center; margin-bottom: 24px; background: rgba(0,0,0,0.2); padding: 12px 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
         <div style="font-family: var(--font-retro); font-size: 9px; color: var(--text-muted); margin-right: 8px;">CRAFTING:</div>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
-          <div class="mc-inv-slot craft-input" id="craft-in-0" style="width: 44px; height: 44px;"></div>
-          <div class="mc-inv-slot craft-input" id="craft-in-1" style="width: 44px; height: 44px;"></div>
-          <div class="mc-inv-slot craft-input" id="craft-in-2" style="width: 44px; height: 44px;"></div>
-          <div class="mc-inv-slot craft-input" id="craft-in-3" style="width: 44px; height: 44px;"></div>
+          <div class="inv-slot craft-input" id="craft-in-0" style="width: 44px; height: 44px; border-radius: 6px;"></div>
+          <div class="inv-slot craft-input" id="craft-in-1" style="width: 44px; height: 44px; border-radius: 6px;"></div>
+          <div class="inv-slot craft-input" id="craft-in-2" style="width: 44px; height: 44px; border-radius: 6px;"></div>
+          <div class="inv-slot craft-input" id="craft-in-3" style="width: 44px; height: 44px; border-radius: 6px;"></div>
         </div>
         <div style="font-size: 16px; color: var(--text-muted); font-family: var(--font-retro);">&#10142;</div>
-        <div class="mc-inv-slot craft-output" id="craft-out" style="width: 48px; height: 48px; border-color: #facc15;"></div>
+        <div class="inv-slot craft-output" id="craft-out" style="width: 48px; height: 48px; border-color: #facc15; border-radius: 8px; box-shadow: 0 0 8px rgba(250, 204, 21, 0.35);"></div>
       </div>
 
       <div style="width: 100%;">
@@ -222,8 +221,8 @@
 
   <!-- Crafting Overlay Screen -->
   <div id="crafting-screen" class="overlay hidden">
-    <div class="mc-panel">
-      <h2 style="color: #3f3f3f;">CRAFTING MENU</h2>
+    <div class="glass-panel">
+      <h2>CRAFTING MENU</h2>
 
       <div class="crafting-list" id="craft-list">
         <!-- JS will populate recipe items -->
@@ -238,10 +237,10 @@
 
   <!-- Game Over Screen Overlay -->
   <div id="screen-gameover" class="overlay hidden">
-    <div class="mc-panel" style="border-color: rgba(255, 74, 74, 0.3);">
-      <h1 style="color: #ff4a4a; text-shadow: 0 4px 12px rgba(255, 74, 74, 0.4); font-family: 'Minecraftia', monospace; font-size: 24px; margin-bottom: 24px;">GAME OVER</h1>
-      <p style="margin-bottom: 28px; color: #3f3f3f; font-size: 14px; text-align: center;">You were defeated by the monsters of the night.</p>
-      <button id="btn-respawn" class="mc-btn" style="background: #ff4a4a; box-shadow: 0 4px 14px rgba(255, 74, 74, 0.4);">RESPAWN</button>
+    <div class="glass-panel" style="border-color: rgba(255, 74, 74, 0.3); box-shadow: 0 12px 40px 0 rgba(255, 0, 0, 0.2);">
+      <h1 style="color: #ff4a4a; text-shadow: 0 4px 12px rgba(255, 74, 74, 0.4); font-family: 'Press Start 2P', monospace; font-size: 24px; margin-bottom: 24px;">GAME OVER</h1>
+      <p style="margin-bottom: 28px; color: var(--text-muted); font-size: 14px; text-align: center;">You were defeated by the monsters of the night.</p>
+      <button id="btn-respawn" class="btn-primary" style="background: #ff4a4a; box-shadow: 0 4px 14px rgba(255, 74, 74, 0.4);">RESPAWN</button>
     </div>
   </div>
 
