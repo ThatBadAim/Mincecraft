@@ -1,0 +1,270 @@
+:root {
+  /* Color Palette */
+  --mc-color-dirt: #4a3321;
+  --mc-color-gui-bg: #c6c6c6;
+  --mc-color-gui-border-light: #ffffff;
+  --mc-color-gui-border-dark: #555555;
+  --mc-color-gui-shadow: #373737;
+
+  --mc-btn-bg-default: #707070;
+  --mc-btn-bg-hover: #5a759e;
+  --mc-btn-bg-active: #4a5c78;
+  --mc-btn-bg-disabled: #3a3a3a;
+  --mc-btn-border-top: #a8a8a8;
+  --mc-btn-border-bottom: #2b2b2b;
+
+  --mc-text-default: #e0e0e0;
+  --mc-text-shadow: #3f3f3f;
+  --mc-text-yellow: #ffff55;
+  --mc-text-disabled: #a0a0a0;
+
+  /* Typography & Pixel Scaling */
+  --mc-font-main: 'Minecraftia', 'VT323', monospace;
+  --mc-pixel-scale: 2px;
+}
+
+/* Global Crisp Pixel Rendering */
+*, *::before, *::after {
+  image-rendering: pixelated !important;
+  image-rendering: crisp-edges !important;
+  font-smooth: never !important;
+  -webkit-font-smoothing: none !important;
+}
+
+body {
+  font-family: var(--mc-font-main);
+  background-color: #111111;
+  color: var(--mc-text-default);
+  margin: 0;
+  padding: 0;
+}
+
+/* Reusable Component Primitives */
+
+/* A. <MinecraftButton> */
+.mc-btn {
+  background-color: var(--mc-btn-bg-default);
+  border: 2px solid;
+  border-top-color: var(--mc-btn-border-top);
+  border-left-color: var(--mc-btn-border-top);
+  border-bottom-color: var(--mc-btn-border-bottom);
+  border-right-color: var(--mc-btn-border-bottom);
+  color: var(--mc-text-default);
+  font-family: var(--mc-font-main);
+  font-size: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-align: center;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.2);
+  transition: none; /* No transition for retro feel */
+  border-radius: 0;
+}
+
+.mc-btn:hover {
+  background-color: var(--mc-btn-bg-hover);
+  color: var(--mc-text-yellow);
+}
+
+.mc-btn:active {
+  background-color: var(--mc-btn-bg-active);
+  border-top-color: var(--mc-btn-border-bottom);
+  border-left-color: var(--mc-btn-border-bottom);
+  border-bottom-color: var(--mc-btn-border-top);
+  border-right-color: var(--mc-btn-border-top);
+  padding: 9px 15px 7px 17px; /* Shift text 1px right and down */
+}
+
+.mc-btn:disabled {
+  background-color: var(--mc-btn-bg-disabled);
+  color: var(--mc-text-disabled);
+  cursor: not-allowed;
+  text-shadow: none;
+}
+
+.mc-btn:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* B. <MinecraftPanel> / <MinecraftDialog> */
+.mc-panel {
+  background-color: var(--mc-color-gui-bg);
+  border: 4px solid;
+  border-top-color: var(--mc-color-gui-border-light);
+  border-left-color: var(--mc-color-gui-border-light);
+  border-bottom-color: var(--mc-color-gui-border-dark);
+  border-right-color: var(--mc-color-gui-border-dark);
+  padding: 16px;
+  box-shadow: inset -2px -2px 0px var(--mc-color-gui-shadow);
+  color: #3f3f3f; /* Darker text for light GUI */
+}
+
+.mc-panel h1, .mc-panel h2, .mc-panel h3 {
+  color: #3f3f3f;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow);
+  text-align: center;
+  margin-top: 0;
+}
+
+.mc-panel.dirt-bg {
+  /* Requires repeating dirt.png tile, using fallback color for now */
+  background-color: var(--mc-color-dirt);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0,0,0,0.1),
+    rgba(0,0,0,0.1) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  box-shadow: inset 0px 8px 16px rgba(0,0,0,0.5);
+  color: var(--mc-text-default);
+  border: none;
+}
+
+.mc-splash-text {
+  color: var(--mc-text-yellow);
+  text-shadow: 2px 2px 0px #3f3f3f;
+  transform: rotate(-20deg);
+  animation: splash-pulse 1s infinite alternate;
+  display: inline-block;
+}
+
+@keyframes splash-pulse {
+  from { transform: rotate(-20deg) scale(1); }
+  to { transform: rotate(-20deg) scale(1.1); }
+}
+
+/* C. <MinecraftInput> & <MinecraftSelect> */
+.mc-input, .mc-select {
+  background-color: #000000;
+  border: 2px solid;
+  border-top-color: #373737;
+  border-left-color: #373737;
+  border-bottom-color: #a8a8a8;
+  border-right-color: #a8a8a8;
+  color: #ffffff;
+  font-family: var(--mc-font-main);
+  padding: 8px;
+  outline: none;
+}
+
+.mc-input:focus {
+  /* Simulate pulsing cursor if we could, basic focus for now */
+  border-color: #ffffff;
+}
+
+/* E. <Minecraft Inventory Slots & Hotbar> */
+.mc-inv-slot, .hotbar-slot {
+  background-color: #8b8b8b;
+  border: 2px solid;
+  border-top-color: #373737;
+  border-left-color: #373737;
+  border-bottom-color: #ffffff;
+  border-right-color: #ffffff;
+  border-radius: 0 !important;
+  box-shadow: inset 2px 2px 0px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.mc-inv-slot:hover, .hotbar-slot:hover {
+  background-color: #8b8b8b;
+  border-color: #ffffff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+  transform: none !important;
+}
+
+.hotbar-slot.active, .inv-slot.selected {
+  border: 2px solid #ffffff !important;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.8) !important;
+  background-color: #8b8b8b !important;
+}
+
+#hotbar {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+#hotbar .hotbar-slot {
+  width: 40px;
+  height: 40px;
+}
+
+#stats-hud-container {
+  width: auto;
+  gap: 160px;
+}
+
+#hearts-row, #hunger-row {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* F. HUD Top Bar overrides */
+#top-bar .stats-card {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  font-family: var(--mc-font-main) !important;
+  color: var(--mc-text-default) !important;
+  text-shadow: 2px 2px 0px #3f3f3f !important;
+}
+
+#top-bar .stats-card span {
+  color: var(--mc-text-yellow) !important;
+}
+
+
+/* D. <MinecraftLoadingScreen> */
+.mc-loading-screen {
+  background-color: #EF323D; /* Mojang Red */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.mc-loading-screen.fade-out-loading {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mc-loading-bar-container {
+  width: 400px;
+  height: 20px;
+  background-color: #555555;
+  border: 4px solid #000000;
+  box-shadow: inset 2px 2px 0px #373737;
+  margin-top: 20px;
+  position: relative;
+}
+
+.mc-loading-bar-fill {
+  background-color: #55FF55;
+  height: 100%;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.mc-loading-text {
+  color: #ffffff;
+  text-shadow: 2px 2px 0px #3f3f3f;
+  margin-top: 10px;
+  font-size: 16px;
+}
