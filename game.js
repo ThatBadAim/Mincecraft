@@ -2188,3 +2188,9 @@ class GameController {
 window.addEventListener('DOMContentLoaded', () => {
   new GameController();
 });
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('button, .inv-slot, .MinecraftButton, .MinecraftInput, input[type="range"]')) {
+    new Audio('./public/audio/click.mp3').play().catch(e => console.log('Audio play blocked or missing'));
+  }
+});

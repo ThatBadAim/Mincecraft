@@ -187,20 +187,7 @@ body, html {
 }
 
 /* Glass Panels */
-.glass-panel {
-  background: var(--bg-dark);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 90%;
-  width: 480px;
-  pointer-events: auto;
-}
+
 
 /* Game Overlays */
 .overlay {
@@ -287,9 +274,6 @@ body, html {
   background: rgba(4, 5, 10, 0.7);
 }
 
-#inventory-screen .glass-panel {
-  width: 520px;
-}
 
 #inventory-screen h2 {
   font-family: var(--font-retro);
@@ -568,63 +552,18 @@ body, html {
 }
 
 /* Minecraft UI Overhaul - Retro Blocky Options Menu */
-.mc-panel {
-  background-color: #2e2e2e;
-  border: 4px solid #181818;
-  outline: 4px solid #4a4a4a;
-  outline-offset: -8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  image-rendering: pixelated;
-}
 
-.mc-option {
-  background-color: #4e4e4e;
-  border: 2px solid;
-  border-color: #7c7c7c #262626 #262626 #7c7c7c; /* 3D bevel look */
-  padding: 8px 12px;
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-  font-family: var(--font-retro);
-  font-size: 8px;
-  line-height: 1;
-}
 
-.mc-option-label {
-  display: flex;
-  justify-content: space-between;
-  text-shadow: 1px 1px 0px #000;
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
-}
+
+
+
 
 /* Minecraft Sliders Track & Handle */
-.mc-option input[type="range"] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 4px;
-  background: #121212;
-  border: 1px solid #5a5a5a;
-  outline: none;
-  margin: 4px 0;
-  border-radius: 0;
-}
 
-.mc-option input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px;
-  height: 18px;
-  background: #5c5c5c;
-  border: 2px solid;
-  border-color: #8c8c8c #373737 #373737 #8c8c8c;
-  cursor: pointer;
-  border-radius: 0;
-}
 
-.mc-option input[type="range"]::-webkit-slider-thumb:hover {
-  background: #7c7c7c;
-  border-color: #acacac #4a4a4a #4a4a4a #acacac;
-}
+
+
+
 
 /* Key binding styling */
 .key-cap-mc {
@@ -639,109 +578,28 @@ body, html {
 }
 
 /* Minecraft-style Grey Beveled Button */
-.btn-mc {
-  background-color: #4e4e4e;
-  border: 2px solid;
-  border-color: #7c7c7c #262626 #262626 #7c7c7c;
-  color: #e0e0e0;
-  font-family: var(--font-retro);
-  font-size: 11px;
-  font-weight: normal;
-  padding: 8px 16px;
-  cursor: pointer;
-  text-align: center;
-  text-shadow: 1px 1px 0px #000;
-  transition: none;
-  border-radius: 0;
-}
 
-.btn-mc:hover {
-  background-color: #5c5c5c;
-  border-color: #8c8c8c #373737 #373737 #8c8c8c;
-  color: #ffffa0; /* Minecraft yellow text hover */
-}
 
-.btn-mc:active {
-  background-color: #383838;
-  border-color: #1c1c1c #525252 #525252 #1c1c1c;
-  color: #aaa;
-}
+
+
+
 
 /* ====================== */
 /* Loading Screen         */
 /* ====================== */
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
-  background-color: #3c2415;
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 15px,
-      rgba(0,0,0,0.08) 15px,
-      rgba(0,0,0,0.08) 16px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 15px,
-      rgba(0,0,0,0.08) 15px,
-      rgba(0,0,0,0.08) 16px
-    );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.8s ease;
-}
 
-#loading-screen.fade-out-loading {
-  opacity: 0;
-  pointer-events: none;
-}
 
-.loading-content {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
 
-.loading-title {
-  font-family: var(--font-retro);
-  font-size: 28px;
-  color: #fff;
-  text-shadow: 3px 3px 0px #000, -1px -1px 0 #000;
-  letter-spacing: 3px;
-}
 
-.loading-bar-container {
-  width: 400px;
-  height: 20px;
-  background: #1a0e08;
-  border: 3px solid #5a3d24;
-  border-radius: 0;
-  overflow: hidden;
-}
 
-.loading-bar-fill {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(180deg, #6aab3d 0%, #4e8b2f 50%, #3a7a1f 100%);
-  transition: width 0.3s ease;
-}
 
-.loading-text {
-  font-family: var(--font-retro);
-  font-size: 10px;
-  color: #ccc;
-  text-shadow: 1px 1px 0 #000;
-}
+
+
+
+
+
+
+
 
 /* ====================== */
 /* Damage Flash Overlay   */
