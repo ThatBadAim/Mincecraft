@@ -13,6 +13,9 @@ class GameController {
   constructor() {
     this.container = document.getElementById('canvas-container');
 
+    // Sound Hook
+    this.clickAudio = new Audio('public/audio/click.mp3');
+
     // 1. Core Three.js Setup
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0x8bc0d9, 0.015);
@@ -740,7 +743,7 @@ class GameController {
     // Render 27 main inventory slots (0 to 26)
     for (let i = 0; i < 27; i++) {
       const slotEl = document.createElement('div');
-      slotEl.className = 'inv-slot';
+      slotEl.className = 'mc-inv-slot';
       if (i === this.selectedInventorySlotIndex) {
         slotEl.classList.add('selected');
       }
@@ -774,7 +777,7 @@ class GameController {
     hotbarGrid.innerHTML = '';
     for (let i = 27; i < 36; i++) {
       const slotEl = document.createElement('div');
-      slotEl.className = 'inv-slot';
+      slotEl.className = 'mc-inv-slot';
       if (i === this.selectedInventorySlotIndex) {
         slotEl.classList.add('selected');
       }
@@ -1005,7 +1008,7 @@ class GameController {
       card.appendChild(info);
 
       const btn = document.createElement('button');
-      btn.className = 'btn-craft';
+      btn.className = 'mc-btn';
       btn.innerText = 'Craft';
 
       // Check ingredients
@@ -1022,6 +1025,7 @@ class GameController {
       }
 
       btn.addEventListener('click', () => {
+        this.clickAudio.play().catch(e => console.warn(e));
         recipe.ingredients.forEach(ing => {
           this.consumeFromInventory(ing.type, ing.count);
         });
@@ -1963,6 +1967,7 @@ class GameController {
     // Controls locking
     if (playBtn) {
       playBtn.addEventListener('click', () => {
+        this.clickAudio.play().catch(e => console.warn(e));
         if (this.playerHealth <= 0) return;
         this.controls.lock();
         gameAudio.resume();
@@ -1999,6 +2004,7 @@ class GameController {
     const respawnBtn = document.getElementById('btn-respawn');
     if (respawnBtn) {
       respawnBtn.addEventListener('click', () => {
+        this.clickAudio.play().catch(e => console.warn(e));
         this.respawn();
       });
     }
