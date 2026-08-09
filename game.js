@@ -1,3 +1,4 @@
+import { WebGPURenderer } from 'three/webgpu';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
@@ -18,7 +19,7 @@ class GameController {
     this.scene.fog = new THREE.FogExp2(0x8bc0d9, 0.015);
 
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGPURenderer({
       antialias: true,
       powerPreference: 'high-performance'
     });
@@ -251,7 +252,30 @@ class GameController {
     }, 500);
 
     // Start rendering frame loop
-    this.animate();
+    this.initRenderer();
+  }
+
+
+  async verifyVulkanBackend() {
+    if (!navigator.gpu) {
+      console.error("WebGPU not supported on this platform.");
+      return;
+    }
+    try {
+      const adapter = await navigator.gpu.requestAdapter();
+      if (adapter) {
+        const info = await adapter.requestAdapterInfo();
+        console.log(`[GPU Pipeline] Architecture: ${info.architecture}, Driver: ${info.description}`);
+      }
+    } catch (e) {
+      console.error("Could not fetch GPU adapter info:", e);
+    }
+  }
+
+  async initRenderer() {
+    await this.verifyVulkanBackend();
+    await this.renderer.init();
+    this.renderer.setAnimationLoop(this.animate);
   }
 
   saveInventory() {
@@ -1732,7 +1756,7 @@ class GameController {
   }
 
   animate() {
-    requestAnimationFrame(this.animate);
+
 
     let dt = this.clock.getDelta();
     if (dt > 0.1) dt = 0.1; // clamp delta time to avoid large jumps when tab is backgrounded

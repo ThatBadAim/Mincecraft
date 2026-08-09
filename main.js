@@ -102,10 +102,11 @@ function createWindow() {
   win.loadURL(`http://127.0.0.1:${port}/index.html`);
 }
 
-// Enable WebGL hardware acceleration flags in Electron to optimize Three.js rendering
-app.commandLine.appendSwitch('enable-gpu-rasterization');
-app.commandLine.appendSwitch('enable-oop-rasterization');
+// Force WebGPU + Vulkan backend on Chromium
+app.commandLine.appendSwitch('enable-features', 'Vulkan,WebGPU');
+app.commandLine.appendSwitch('use-vulkan', 'native');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
+
 
 app.whenReady().then(() => {
   startServer();
