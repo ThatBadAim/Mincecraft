@@ -1,0 +1,6 @@
+
+> minecraft-clone-desktop@1.0.0 start
+> electron .
+
+[79315:0813/232838.456544:ERROR:ozone_platform_x11.cc(240)] Missing X server or $DISPLAY
+[79315:0813/232838.456599:ERROR:env.cc(257)] The platform failed to initialize.  Exiting.
