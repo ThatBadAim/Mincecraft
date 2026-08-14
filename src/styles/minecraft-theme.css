@@ -1,4 +1,15 @@
+@font-face {
+  font-family: 'Minecraftia';
+  src: url('../../public/fonts/Minecraftia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
+  /* Font overrides */
+  --font-retro: var(--mc-font-main) !important;
+  --font-sans: var(--mc-font-main) !important;
+
   /* Color Palette */
   --mc-color-dirt: #4a3321;
   --mc-color-gui-bg: #c6c6c6;

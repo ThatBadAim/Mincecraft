@@ -1029,7 +1029,7 @@ class GameController {
       card.appendChild(info);
 
       const btn = document.createElement('button');
-      btn.className = 'btn-craft';
+      btn.className = 'btn-craft MinecraftButton';
       btn.innerText = 'Craft';
 
       // Check ingredients
