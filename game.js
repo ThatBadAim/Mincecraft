@@ -1029,8 +1029,10 @@ class GameController {
       card.appendChild(info);
 
       const btn = document.createElement('button');
-      btn.className = 'btn-craft';
-      btn.innerText = 'Craft';
+      btn.className = 'MinecraftButton';
+      const span = document.createElement('span');
+      span.innerText = 'Craft';
+      btn.appendChild(span);
 
       // Check ingredients
       let canCraft = true;
@@ -2215,6 +2217,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('click', (e) => {
   if (e.target.closest('button, .inv-slot, .MinecraftButton, .MinecraftInput, input[type="range"]')) {
-    new Audio('./public/audio/click.mp3').play().catch(e => console.log('Audio play blocked or missing'));
+    gameAudio.playClickSound();
   }
 });

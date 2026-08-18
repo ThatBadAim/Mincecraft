@@ -304,3 +304,42 @@ body {
 .mc-option {
   margin-bottom: 4px !important;
 }
+
+/* Additional overrides to ensure perfect compliance */
+.MinecraftInput {
+  background-color: #000000 !important;
+  border-top-color: #373737 !important;
+  border-left-color: #373737 !important;
+  border-bottom-color: #a8a8a8 !important;
+  border-right-color: #a8a8a8 !important;
+  color: #ffffff !important;
+}
+
+@keyframes cursor-pulse {
+  0% { border-right-color: transparent; }
+  50% { border-right-color: #ffff55; }
+  100% { border-right-color: transparent; }
+}
+
+.MinecraftInput:focus {
+  outline: none;
+  border-right: 2px solid #ffff55;
+  animation: cursor-pulse 1s infinite;
+}
+
+/* Fix Loading Screen to use either Mojang Red or Dirt per spec */
+/* Using Mojang Red as it is the primary fallback for progress bar */
+.MinecraftLoadingScreen {
+  background-image: none !important;
+  background-color: #ef323d !important; /* Mojang Red */
+}
+
+.MinecraftLoadingScreen .loading-bar-container {
+  border: 4px solid #000000 !important;
+  background: #c6c6c6 !important;
+  box-shadow: inset 4px 4px 0px #555555 !important;
+}
+
+.MinecraftLoadingScreen .loading-bar-fill {
+  background-color: #55ff55 !important;
+}
