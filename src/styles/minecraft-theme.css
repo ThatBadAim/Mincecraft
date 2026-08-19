@@ -121,9 +121,16 @@ body {
   padding: 4px;
 }
 
+@keyframes pulse-cursor {
+  0%, 100% { border-right-color: #ffff55; }
+  50% { border-right-color: transparent; }
+}
+
 .MinecraftInput:focus {
   outline: none;
   /* Pulsing yellow cursor */
+  border-right: 2px solid #ffff55;
+  animation: pulse-cursor 1s infinite step-end;
 }
 
 /* MinecraftLoadingScreen */
