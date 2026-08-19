@@ -245,30 +245,6 @@ body, html {
   min-width: 32px;
 }
 
-.btn-primary {
-  background: var(--accent-color);
-  color: #fff;
-  border: none;
-  font-family: var(--font-retro);
-  font-size: 12px;
-  padding: 16px 32px;
-  border-radius: 12px;
-  cursor: pointer;
-  width: 100%;
-  transition: all var(--transition-speed) ease;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-}
-
-.btn-primary:hover {
-  background: #5a52ff;
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
-  transform: translateY(-2px);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
 /* Inventory Overlay */
 #inventory-screen {
   background: rgba(4, 5, 10, 0.7);
@@ -470,30 +446,6 @@ body, html {
   font-size: 11px;
   color: var(--text-muted);
   text-align: left;
-}
-
-.btn-craft {
-  background: var(--accent-color);
-  color: #fff;
-  border: none;
-  font-family: var(--font-retro);
-  font-size: 9px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all var(--transition-speed);
-}
-
-.btn-craft:hover:not(:disabled) {
-  background: #5a52ff;
-  transform: translateY(-1px);
-}
-
-.btn-craft:disabled {
-  background: #374151;
-  color: #9ca3af;
-  cursor: not-allowed;
-  opacity: 0.6;
 }
 
 /* Hearts & Hunger Stats HUD */
