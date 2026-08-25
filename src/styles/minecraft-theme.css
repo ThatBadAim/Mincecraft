@@ -258,36 +258,36 @@ body {
 
 /* Improve button font size and shading */
 .MinecraftButton {
-  background-color: #c6c6c6 !important;
-  border-top: 2px solid #ffffff !important;
-  border-left: 2px solid #ffffff !important;
-  border-bottom: 2px solid #555555 !important;
-  border-right: 2px solid #555555 !important;
-  color: #373737 !important;
-  text-shadow: 1px 1px 0px #ffffff !important;
+  background-color: var(--mc-btn-bg-default) !important;
+  border-top: 2px solid var(--mc-btn-border-top) !important;
+  border-left: 2px solid var(--mc-btn-border-top) !important;
+  border-bottom: 2px solid var(--mc-btn-border-bottom) !important;
+  border-right: 2px solid var(--mc-btn-border-bottom) !important;
+  color: var(--mc-text-default) !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
   font-size: 16px !important;
   padding: 8px 16px !important;
-  box-shadow: inset 0 0 0 2px #8b8b8b !important;
+  box-shadow: none !important;
 }
 
 .MinecraftButton:hover {
-  background-color: #5a759e !important;
-  color: #ffff55 !important;
-  border-top: 2px solid #a8a8a8 !important;
-  border-left: 2px solid #a8a8a8 !important;
-  border-bottom: 2px solid #2b2b2b !important;
-  border-right: 2px solid #2b2b2b !important;
-  box-shadow: inset 0 0 0 2px #4a5c78 !important;
-  text-shadow: 2px 2px 0px #3f3f3f !important;
+  background-color: var(--mc-btn-bg-hover) !important;
+  color: var(--mc-text-yellow) !important;
+  border-top: 2px solid var(--mc-btn-border-top) !important;
+  border-left: 2px solid var(--mc-btn-border-top) !important;
+  border-bottom: 2px solid var(--mc-btn-border-bottom) !important;
+  border-right: 2px solid var(--mc-btn-border-bottom) !important;
+  box-shadow: none !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
 }
 
 .MinecraftButton:active {
-  background-color: #4a5c78 !important;
-  border-top: 2px solid #2b2b2b !important;
-  border-left: 2px solid #2b2b2b !important;
-  border-bottom: 2px solid #a8a8a8 !important;
-  border-right: 2px solid #a8a8a8 !important;
-  box-shadow: inset 0 0 0 2px #3a4a61 !important;
+  background-color: var(--mc-btn-bg-active) !important;
+  border-top: 2px solid var(--mc-btn-border-bottom) !important;
+  border-left: 2px solid var(--mc-btn-border-bottom) !important;
+  border-bottom: 2px solid var(--mc-btn-border-top) !important;
+  border-right: 2px solid var(--mc-btn-border-top) !important;
+  box-shadow: none !important;
 }
 
 /* Improve panel borders to look exactly like MC containers */
