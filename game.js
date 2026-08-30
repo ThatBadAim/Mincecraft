@@ -1029,8 +1029,11 @@ class GameController {
       card.appendChild(info);
 
       const btn = document.createElement('button');
-      btn.className = 'btn-craft';
-      btn.innerText = 'Craft';
+      btn.className = 'MinecraftButton btn-craft';
+      btn.style.width = '100%';
+      const btnText = document.createElement('span');
+      btnText.innerText = 'CRAFT';
+      btn.appendChild(btnText);
 
       // Check ingredients
       let canCraft = true;

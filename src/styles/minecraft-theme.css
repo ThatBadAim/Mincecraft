@@ -109,7 +109,7 @@ body {
 }
 
 /* MinecraftInput */
-.MinecraftInput, .MinecraftInput input[type="range"] {
+.MinecraftInput, .MinecraftInput input[type="range"], .MinecraftSelect {
   background-color: #000000;
   border: var(--mc-pixel-scale) solid;
   border-top-color: #373737;
@@ -121,9 +121,19 @@ body {
   padding: 4px;
 }
 
-.MinecraftInput:focus {
+@keyframes cursor-pulse {
+  0%, 100% { border-right-color: transparent; }
+  50% { border-right-color: var(--mc-text-yellow); }
+}
+
+input.MinecraftInput, .MinecraftInput input:not([type="range"]) {
+  caret-color: transparent;
+}
+
+input.MinecraftInput:focus, .MinecraftInput input:not([type="range"]):focus {
   outline: none;
-  /* Pulsing yellow cursor */
+  border-right: 2px solid var(--mc-text-yellow);
+  animation: cursor-pulse 1s step-end infinite;
 }
 
 /* MinecraftLoadingScreen */
@@ -247,8 +257,8 @@ body {
   background: rgba(0, 0, 0, 0.7) !important;
 }
 
-/* Make loading screen use dirt background */
-.MinecraftLoadingScreen {
+/* Make loading screen use dirt background (Option) or red (Option) */
+.MinecraftLoadingScreen.dirt-bg {
   background-image: url('../../public/textures/dirt.png') !important;
   background-repeat: repeat !important;
   background-size: 64px 64px !important;
@@ -258,47 +268,67 @@ body {
 
 /* Improve button font size and shading */
 .MinecraftButton {
-  background-color: #c6c6c6 !important;
-  border-top: 2px solid #ffffff !important;
-  border-left: 2px solid #ffffff !important;
-  border-bottom: 2px solid #555555 !important;
-  border-right: 2px solid #555555 !important;
-  color: #373737 !important;
-  text-shadow: 1px 1px 0px #ffffff !important;
+  background-color: var(--mc-btn-bg-default) !important;
+  border-top: 2px solid var(--mc-btn-border-top) !important;
+  border-left: 2px solid var(--mc-btn-border-top) !important;
+  border-bottom: 2px solid var(--mc-btn-border-bottom) !important;
+  border-right: 2px solid var(--mc-btn-border-bottom) !important;
+  color: var(--mc-text-default) !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
   font-size: 16px !important;
   padding: 8px 16px !important;
   box-shadow: inset 0 0 0 2px #8b8b8b !important;
 }
 
 .MinecraftButton:hover {
-  background-color: #5a759e !important;
-  color: #ffff55 !important;
-  border-top: 2px solid #a8a8a8 !important;
-  border-left: 2px solid #a8a8a8 !important;
-  border-bottom: 2px solid #2b2b2b !important;
-  border-right: 2px solid #2b2b2b !important;
+  background-color: var(--mc-btn-bg-hover) !important;
+  color: var(--mc-text-yellow) !important;
+  border-top: 2px solid var(--mc-btn-border-top) !important;
+  border-left: 2px solid var(--mc-btn-border-top) !important;
+  border-bottom: 2px solid var(--mc-btn-border-bottom) !important;
+  border-right: 2px solid var(--mc-btn-border-bottom) !important;
   box-shadow: inset 0 0 0 2px #4a5c78 !important;
-  text-shadow: 2px 2px 0px #3f3f3f !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
 }
 
 .MinecraftButton:active {
-  background-color: #4a5c78 !important;
-  border-top: 2px solid #2b2b2b !important;
-  border-left: 2px solid #2b2b2b !important;
-  border-bottom: 2px solid #a8a8a8 !important;
-  border-right: 2px solid #a8a8a8 !important;
+  background-color: var(--mc-btn-bg-active) !important;
+  border-top: 2px solid var(--mc-btn-border-bottom) !important;
+  border-left: 2px solid var(--mc-btn-border-bottom) !important;
+  border-bottom: 2px solid var(--mc-btn-border-top) !important;
+  border-right: 2px solid var(--mc-btn-border-top) !important;
   box-shadow: inset 0 0 0 2px #3a4a61 !important;
+}
+
+.MinecraftButton:active span {
+  display: inline-block;
+  transform: translate(1px, 1px);
+}
+
+.MinecraftButton:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
 }
 
 /* Improve panel borders to look exactly like MC containers */
 .MinecraftPanel, .MinecraftDialog {
-  background-color: #c6c6c6 !important;
-  border-top: 4px solid #ffffff !important;
-  border-left: 4px solid #ffffff !important;
-  border-bottom: 4px solid #555555 !important;
-  border-right: 4px solid #555555 !important;
-  box-shadow: inset -2px -2px 0px 0px #8b8b8b, inset 2px 2px 0px 0px #ffffff !important;
+  background-color: var(--mc-color-gui-bg) !important;
+  border-top: 4px solid var(--mc-color-gui-border-light) !important;
+  border-left: 4px solid var(--mc-color-gui-border-light) !important;
+  border-bottom: 4px solid var(--mc-color-gui-border-dark) !important;
+  border-right: 4px solid var(--mc-color-gui-border-dark) !important;
+  box-shadow: inset -2px -2px 0px 0px #8b8b8b, inset 2px 2px 0px 0px var(--mc-color-gui-border-light) !important;
   padding: 12px 16px !important;
+}
+
+.MinecraftPanel.dirt-bg, .MinecraftDialog.dirt-bg {
+  background-image: url('../../public/textures/dirt.png') !important;
+  background-repeat: repeat !important;
+  background-size: 64px 64px !important;
+  background-color: var(--mc-color-dirt) !important;
+  box-shadow: inset 0px 4px 8px 0px rgba(0, 0, 0, 0.5) !important;
+  border: none !important;
+  image-rendering: pixelated;
 }
 
 .mc-option {
