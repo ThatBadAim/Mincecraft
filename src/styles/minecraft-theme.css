@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Minecraftia';
+  src: url('../../public/fonts/Minecraftia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   /* Color Palette */
   --mc-color-dirt: #4a3321;
@@ -21,6 +28,8 @@
   /* Typography & Pixel Scaling */
   --mc-font-main: 'Minecraftia', 'VT323', monospace;
   --mc-pixel-scale: 2px;
+  --font-retro: var(--mc-font-main) !important;
+  --font-sans: var(--mc-font-main) !important;
 }
 
 /* Global Crisp Pixel Rendering */
@@ -205,6 +214,32 @@ body {
 }
 
 /* Fix HUD Elements */
+.hotbar-slot {
+  background-color: #8b8b8b !important;
+  border: 2px solid !important;
+  border-top-color: #373737 !important;
+  border-left-color: #373737 !important;
+  border-bottom-color: #ffffff !important;
+  border-right-color: #ffffff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.hotbar-slot.active {
+  background-color: #c6c6c6 !important;
+  border-color: #ffffff !important;
+}
+
+.craft-recipe-card {
+  background-color: #c6c6c6 !important;
+  border-top: 2px solid #ffffff !important;
+  border-left: 2px solid #ffffff !important;
+  border-bottom: 2px solid #555555 !important;
+  border-right: 2px solid #555555 !important;
+  border-radius: 0 !important;
+  box-shadow: inset -2px -2px 0px 0px #8b8b8b, inset 2px 2px 0px 0px #ffffff !important;
+}
+
 .stats-card, #controls-hint {
   background-color: var(--mc-color-gui-bg) !important;
   border: var(--mc-pixel-scale) solid !important;
