@@ -107,9 +107,9 @@
 
   <!-- Menu / Play Screen Overlay -->
   <div id="screen-menu" class="overlay">
-    <div class="MinecraftPanel" style="width: 600px; padding: 28px 36px; display: flex; flex-direction: column; gap: 20px; align-items: center; border-radius: 0;">
+    <div class="MinecraftPanel" style="width: 600px; padding: 28px 36px; display: flex; flex-direction: column; gap: 20px; align-items: center;">
 
-      <h2 style="font-family: var(--font-retro); font-size: 14px; color: #fff; text-shadow: 2px 2px 0px #000; margin: 0; text-align: center; letter-spacing: 1px;">GAME OPTIONS</h2>
+      <h2><span class="splash-text">GAME OPTIONS</span></h2>
 
       <!-- Sliders 2x2 Grid -->
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%;">
@@ -242,9 +242,9 @@
 
   <!-- Game Over Screen Overlay -->
   <div id="screen-gameover" class="overlay hidden">
-    <div class="MinecraftPanel" style="border-color: rgba(255, 74, 74, 0.3); box-shadow: 0 12px 40px 0 rgba(255, 0, 0, 0.2);">
-      <h1 style="color: #ff4a4a; text-shadow: 0 4px 12px rgba(255, 74, 74, 0.4); font-family: 'Press Start 2P', monospace; font-size: 24px; margin-bottom: 24px;">GAME OVER</h1>
-      <p style="margin-bottom: 28px; color: var(--text-muted); font-size: 14px; text-align: center;">You were defeated by the monsters of the night.</p>
+    <div class="MinecraftPanel">
+      <h1 style="color: #ff4a4a; font-size: 24px; margin-bottom: 24px;">GAME OVER</h1>
+      <p style="margin-bottom: 28px; color: var(--mc-text-default); font-size: 14px; text-align: center;">You were defeated by the monsters of the night.</p>
       <button id="btn-respawn" class="MinecraftButton" style="background: #ff4a4a; box-shadow: 0 4px 14px rgba(255, 74, 74, 0.4);"><span>RESPAWN</span></button>
     </div>
   </div>
