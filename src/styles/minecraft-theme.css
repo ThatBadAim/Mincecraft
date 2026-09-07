@@ -304,3 +304,36 @@ body {
 .mc-option {
   margin-bottom: 4px !important;
 }
+
+/* Hotbar override */
+#hotbar {
+  background: var(--mc-color-gui-bg) !important;
+  border-top: 4px solid var(--mc-color-gui-border-light) !important;
+  border-left: 4px solid var(--mc-color-gui-border-light) !important;
+  border-bottom: 4px solid var(--mc-color-gui-border-dark) !important;
+  border-right: 4px solid var(--mc-color-gui-border-dark) !important;
+  backdrop-filter: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Control keycaps override */
+.key-cap-mc {
+  background: var(--mc-btn-bg-default) !important;
+  border-top: 2px solid var(--mc-btn-border-top) !important;
+  border-left: 2px solid var(--mc-btn-border-top) !important;
+  border-bottom: 2px solid var(--mc-btn-border-bottom) !important;
+  border-right: 2px solid var(--mc-btn-border-bottom) !important;
+  border-radius: 0 !important;
+  color: var(--mc-text-default) !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
+}
+
+/* Controls container override */
+.mc-controls-container {
+  background: var(--mc-color-gui-bg) !important;
+  border-top: 4px solid var(--mc-color-gui-border-light) !important;
+  border-left: 4px solid var(--mc-color-gui-border-light) !important;
+  border-bottom: 4px solid var(--mc-color-gui-border-dark) !important;
+  border-right: 4px solid var(--mc-color-gui-border-dark) !important;
+}
