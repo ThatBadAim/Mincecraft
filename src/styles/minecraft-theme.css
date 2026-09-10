@@ -134,7 +134,8 @@ body {
   width: 100%;
   height: 100%;
   z-index: 1000;
-  background-color: #ef323d; /* Mojang Red */
+  background-color: #ef323d !important; /* Mojang Red */
+  background-image: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,8 +151,8 @@ body {
   width: 400px;
   height: 20px;
   background: #c6c6c6;
-  border: var(--mc-pixel-scale) solid #000000;
-  box-shadow: inset 2px 2px 0px #555555;
+  border: 4px solid #000000 !important;
+  box-shadow: inset 4px 4px 0px #555555 !important;
   overflow: hidden;
   position: relative;
 }
@@ -242,18 +243,18 @@ body {
 /* Refined Minecraft Styling overrides */
 
 /* Make overlays (the dark background) use the dirt texture if they want to look more Minecrafty, or just darker.
-   Actually, the loading screen and options menu background typically have dirt. */
-#screen-menu, #inventory-screen, #crafting-screen {
-  background: rgba(0, 0, 0, 0.7) !important;
-}
-
-/* Make loading screen use dirt background */
-.MinecraftLoadingScreen {
+   Actually, the options menu background typically have dirt. */
+#screen-menu, #inventory-screen, #crafting-screen, #screen-gameover {
   background-image: url('../../public/textures/dirt.png') !important;
   background-repeat: repeat !important;
   background-size: 64px 64px !important;
   background-color: var(--mc-color-dirt) !important;
-  image-rendering: pixelated;
+  image-rendering: pixelated !important;
+}
+
+/* Ensure global borders are rigid */
+.MinecraftPanel, .MinecraftButton, .MinecraftInput, .MinecraftInput input[type="range"], .inv-slot {
+  border-radius: 0 !important;
 }
 
 /* Improve button font size and shading */
@@ -303,4 +304,59 @@ body {
 
 .mc-option {
   margin-bottom: 4px !important;
+}
+
+/* Remove modern CSS from style.css for HUD and hotbar */
+#hotbar {
+  background: #c6c6c6 !important;
+  border: 2px solid #555555 !important;
+  border-top-color: #ffffff !important;
+  border-left-color: #ffffff !important;
+  backdrop-filter: none !important;
+  box-shadow: inset -2px -2px 0px 0px #8b8b8b, inset 2px 2px 0px 0px #ffffff, 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+  border-radius: 0 !important;
+}
+
+.hotbar-slot {
+  background: #8b8b8b !important;
+  border: 2px solid !important;
+  border-top-color: #373737 !important;
+  border-left-color: #373737 !important;
+  border-bottom-color: #ffffff !important;
+  border-right-color: #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.hotbar-slot:hover {
+  background: #c6c6c6 !important;
+  border-color: #ffffff !important;
+}
+
+.hotbar-slot.active {
+  border-color: #ffffff !important;
+  box-shadow: inset 0 0 0 2px #373737 !important;
+  background: #c6c6c6 !important;
+}
+
+#hearts-row, #hunger-row {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.craft-recipe-card {
+  background: #c6c6c6 !important;
+  border: 2px solid !important;
+  border-top-color: #ffffff !important;
+  border-left-color: #ffffff !important;
+  border-bottom-color: #555555 !important;
+  border-right-color: #555555 !important;
+  border-radius: 0 !important;
+  box-shadow: inset -2px -2px 0px 0px #8b8b8b, inset 2px 2px 0px 0px #ffffff !important;
+}
+
+.craft-recipe-card:hover {
+  background: #d6d6d6 !important;
 }
