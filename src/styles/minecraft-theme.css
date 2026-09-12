@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Minecraftia';
+  src: url('../../public/fonts/Minecraftia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   /* Color Palette */
   --mc-color-dirt: #4a3321;
@@ -21,6 +28,8 @@
   /* Typography & Pixel Scaling */
   --mc-font-main: 'Minecraftia', 'VT323', monospace;
   --mc-pixel-scale: 2px;
+  --font-retro: var(--mc-font-main) !important;
+  --font-sans: var(--mc-font-main) !important;
 }
 
 /* Global Crisp Pixel Rendering */
@@ -124,6 +133,7 @@ body {
 .MinecraftInput:focus {
   outline: none;
   /* Pulsing yellow cursor */
+  caret-color: var(--mc-text-yellow);
 }
 
 /* MinecraftLoadingScreen */
@@ -256,39 +266,6 @@ body {
   image-rendering: pixelated;
 }
 
-/* Improve button font size and shading */
-.MinecraftButton {
-  background-color: #c6c6c6 !important;
-  border-top: 2px solid #ffffff !important;
-  border-left: 2px solid #ffffff !important;
-  border-bottom: 2px solid #555555 !important;
-  border-right: 2px solid #555555 !important;
-  color: #373737 !important;
-  text-shadow: 1px 1px 0px #ffffff !important;
-  font-size: 16px !important;
-  padding: 8px 16px !important;
-  box-shadow: inset 0 0 0 2px #8b8b8b !important;
-}
-
-.MinecraftButton:hover {
-  background-color: #5a759e !important;
-  color: #ffff55 !important;
-  border-top: 2px solid #a8a8a8 !important;
-  border-left: 2px solid #a8a8a8 !important;
-  border-bottom: 2px solid #2b2b2b !important;
-  border-right: 2px solid #2b2b2b !important;
-  box-shadow: inset 0 0 0 2px #4a5c78 !important;
-  text-shadow: 2px 2px 0px #3f3f3f !important;
-}
-
-.MinecraftButton:active {
-  background-color: #4a5c78 !important;
-  border-top: 2px solid #2b2b2b !important;
-  border-left: 2px solid #2b2b2b !important;
-  border-bottom: 2px solid #a8a8a8 !important;
-  border-right: 2px solid #a8a8a8 !important;
-  box-shadow: inset 0 0 0 2px #3a4a61 !important;
-}
 
 /* Improve panel borders to look exactly like MC containers */
 .MinecraftPanel, .MinecraftDialog {
