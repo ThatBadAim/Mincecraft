@@ -304,3 +304,78 @@ body {
 .mc-option {
   margin-bottom: 4px !important;
 }
+
+/* Recipe Card Overrides */
+.craft-recipe-card {
+  border-radius: 0 !important;
+  background-color: var(--mc-color-gui-bg) !important;
+  border: var(--mc-pixel-scale) solid !important;
+  border-top-color: var(--mc-color-gui-border-dark) !important;
+  border-left-color: var(--mc-color-gui-border-dark) !important;
+  border-bottom-color: var(--mc-color-gui-border-light) !important;
+  border-right-color: var(--mc-color-gui-border-light) !important;
+}
+
+.craft-recipe-card:hover {
+  background-color: #a0a0a0 !important;
+  border-color: var(--mc-color-gui-border-light) !important;
+}
+
+.recipe-icon {
+  border-radius: 0 !important;
+}
+
+.recipe-name {
+  font-family: var(--mc-font-main) !important;
+  color: var(--mc-text-default) !important;
+  text-shadow: 2px 2px 0px var(--mc-text-shadow) !important;
+}
+
+.recipe-cost {
+  font-family: var(--mc-font-main) !important;
+}
+
+/* Hotbar Overrides */
+.hotbar-slot {
+  border-radius: 0 !important;
+  background-color: #8b8b8b !important;
+  border: var(--mc-pixel-scale) solid !important;
+  border-top-color: #373737 !important;
+  border-left-color: #373737 !important;
+  border-bottom-color: #ffffff !important;
+  border-right-color: #ffffff !important;
+}
+
+.hotbar-slot:hover {
+  background-color: #c6c6c6 !important;
+  border-color: #ffffff !important;
+}
+
+.hotbar-slot.active {
+  background-color: #c6c6c6 !important;
+  border: var(--mc-pixel-scale) solid !important;
+  border-color: #ffffff !important;
+  box-shadow: inset 0 0 0 2px #555555 !important;
+}
+
+/* Hotbar HUD Background Reset */
+#hud-bottom {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#hotbar {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+#hearts-row, #hunger-row {
+  border-radius: 0 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
